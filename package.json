@@ -2,7 +2,7 @@
   "name": "react-microsoft-login",
   "description": "React component for easy OAuth with Microsoft services on client side.",
   "main": "dist/index.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "alexandrtovmach@gmail.com",
   "private": false,
   "scripts": {
@@ -10,6 +10,8 @@
     "transpile": "babel src -d dist --copy-files",
     "precommit": "lint-staged",
     "prepublish": "lint-staged && npm run transpile",
+    "build": "webpack --mode production",
+    "deploy": "npm run build && gh-pages -d examples/dist",
     "prettify": "prettier --write './src/**/*.{js,jsx,json,css,md}'"
   },
   "dependencies": {},
@@ -20,6 +22,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^1.0.0",
+    "gh-pages": "^2.0.1",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^1.1.2",
     "lint-staged": "^7.3.0",
