@@ -1,13 +1,20 @@
 import * as React from 'react';
 
-export interface AppProps extends React.Props<App> {
+export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   color: string;
 }
 
-declare class App extends React.Component<AppProps, any> {
+export interface MicrosoftLoginButtonProps extends React.Props<MicrosoftLoginButton> {
+  theme: "dark_short" | "light_short" | "dark" | "light"
 }
 
-declare module 'hello-world' {
+declare class MicrosoftLogin extends React.Component<MicrosoftLoginProps, any> {
+}
+declare class MicrosoftLoginButton extends React.Component<MicrosoftLoginButtonProps, any> {
+}
+declare module 'microsoft-login' {
+}
+declare module 'microsoft-login-button' {
 }
 
-export default App;
+export default MicrosoftLogin;

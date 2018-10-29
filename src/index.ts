@@ -1,4 +1,4 @@
-import MicrosoftLogin from "./App";
+import MicrosoftLogin from "./MicrosoftLogin";
 
 export { MicrosoftLogin };
 
