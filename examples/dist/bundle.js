@@ -6810,90 +6810,53 @@ object-assign
   },
   function(e, t, n) {
     "use strict";
-    Object.defineProperty(t, "__esModule", { value: !0 }),
-      (t.MicrosoftLogin = void 0);
-    var r = (function(e) {
-      return e && e.__esModule ? e : { default: e };
-    })(n(9));
+    Object.defineProperty(t, "__esModule", { value: !0 });
+    var r = n(9);
     (t.MicrosoftLogin = r.default), (t.default = r.default);
   },
   function(e, t, n) {
     "use strict";
-    Object.defineProperty(t, "__esModule", { value: !0 });
     var r = (function() {
-        function e(e, t) {
-          for (var n = 0; n < t.length; n++) {
-            var r = t[n];
-            (r.enumerable = r.enumerable || !1),
-              (r.configurable = !0),
-              "value" in r && (r.writable = !0),
-              Object.defineProperty(e, r.key, r);
-          }
+      var e = function(t, n) {
+        return (e =
+          Object.setPrototypeOf ||
+          ({ __proto__: [] } instanceof Array &&
+            function(e, t) {
+              e.__proto__ = t;
+            }) ||
+          function(e, t) {
+            for (var n in t) t.hasOwnProperty(n) && (e[n] = t[n]);
+          })(t, n);
+      };
+      return function(t, n) {
+        function r() {
+          this.constructor = t;
         }
-        return function(t, n, r) {
-          return n && e(t.prototype, n), r && e(t, r), t;
-        };
-      })(),
-      l = n(0),
-      i = (function(e) {
-        return e && e.__esModule ? e : { default: e };
-      })(l);
-    var o = (function(e) {
-      function t() {
-        return (
-          (function(e, t) {
-            if (!(e instanceof t))
-              throw new TypeError("Cannot call a class as a function");
-          })(this, t),
-          (function(e, t) {
-            if (!e)
-              throw new ReferenceError(
-                "this hasn't been initialised - super() hasn't been called"
-              );
-            return !t || ("object" != typeof t && "function" != typeof t)
-              ? e
-              : t;
-          })(
-            this,
-            (t.__proto__ || Object.getPrototypeOf(t)).apply(this, arguments)
-          )
-        );
-      }
-      return (
-        (function(e, t) {
-          if ("function" != typeof t && null !== t)
-            throw new TypeError(
-              "Super expression must either be null or a function, not " +
-                typeof t
-            );
-          (e.prototype = Object.create(t && t.prototype, {
-            constructor: {
-              value: e,
-              enumerable: !1,
-              writable: !0,
-              configurable: !0
-            }
-          })),
-            t &&
-              (Object.setPrototypeOf
-                ? Object.setPrototypeOf(e, t)
-                : (e.__proto__ = t));
-        })(t, l.Component),
-        r(t, [
-          {
-            key: "render",
-            value: function() {
-              return i.default.createElement(
-                "div",
-                { className: "App" },
-                "Coming Soon..."
-              );
-            }
-          }
-        ]),
-        t
-      );
+        e(t, n),
+          (t.prototype =
+            null === n
+              ? Object.create(n)
+              : ((r.prototype = n.prototype), new r()));
+      };
     })();
-    t.default = o;
+    Object.defineProperty(t, "__esModule", { value: !0 });
+    var l = n(0),
+      i = (function(e) {
+        function t() {
+          return (null !== e && e.apply(this, arguments)) || this;
+        }
+        return (
+          r(t, e),
+          (t.prototype.renders = function() {
+            return l.createElement(
+              "div",
+              { style: { color: this.props.color } },
+              "Testing build"
+            );
+          }),
+          t
+        );
+      })(l.Component);
+    t.default = i;
   }
 ]);

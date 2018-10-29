@@ -5,7 +5,7 @@ export default class HelloWorld extends React.Component<AppProps, any> {
   renders() {
     return (
       <div style={{ color: this.props.color }}>
-        Hello world!
+        Testing build
       </div>
     );
   }

@@ -9,7 +9,7 @@
     "start": "webpack-dev-server --mode development",
     "precommit": "lint-staged",
     "prepare": "lint-staged && yarn build",
-    "build": "rm -rf ./dist && tsc",
+    "build": "rm -rf ./dist && tsc && webpack",
     "deploy": "yarn build && gh-pages -d examples/dist",
     "prettify": "prettier --write './src/**/*.{js,jsx,json,css,md}'"
   },
