@@ -7,7 +7,7 @@ export default class MicrosoftLoginButton extends React.Component<
   any
 > {
   render() {
-    const { buttonTheme, buttonClassName } = this.props,
+    const { buttonTheme, buttonClassName, onClick } = this.props,
       [bg, short] = buttonTheme.split("_"),
       isDark = bg === "dark",
       styleObj = {
@@ -22,6 +22,7 @@ export default class MicrosoftLoginButton extends React.Component<
           height="41"
           style={styleObj}
           className={buttonClassName}
+          onClick={onClick}
         >
           <path fill={isDark ? "#2f2f2f" : "#ffffff"} d="M0 0h104v41H0z" />
           {!isDark && (
@@ -45,6 +46,7 @@ export default class MicrosoftLoginButton extends React.Component<
           height="41"
           style={styleObj}
           className={buttonClassName}
+          onClick={onClick}
         >
           <path fill={isDark ? "#2f2f2f" : "#ffffff"} d="M0 0h215v41H0z" />
           {!isDark && (

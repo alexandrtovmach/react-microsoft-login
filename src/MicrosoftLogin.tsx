@@ -1,14 +1,79 @@
 import * as React from "react";
+import { UserAgentApplication } from "msal";
 
 import { MicrosoftLoginProps } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
+// {
+//   "@odata.context": string,
+//   businessPhones: [string],
+//   displayName: string,
+//   givenName: string,
+//   id: string,
+//   jobTitle: string,
+//   mail: string,
+//   mobilePhone: string,
+//   officeLocation: string,
+//   preferredLanguage: string,
+//   surname: string,
+//   userPrincipalName: string
+// }
 
-const url = `https://login.microsoftonline.com/common/oauth2/authorize?client_id=f8c7976f-3e93-482d-88a3-62a1133cbbc3&response_type=id_token&redirect_uri=http%3A%2F%2Flocalhost%3a3001&response_mode=form_post&scope=openid&state=12345&nonce=7362CAEA-9CA5-4B43-9BA3-34D7C303EBA7`
+export default class MicrosoftLogin extends React.Component<MicrosoftLoginProps, any> {
+  constructor(props: any) {
+    super(props);
 
-export default class MicrosoftLogin extends React.Component<
-  MicrosoftLoginProps,
-  any
-  > {
+    this.state = {
+      msalInstance: new UserAgentApplication(props.clientId, null, this.oAuthCallback)
+    };
+  }
+
+  oAuthCallback(errorDesc: any, token: string|null, error: any, tokenType: any) {
+    const { debug } = this.props;
+    if (token) {
+      debug && console.log(token);
+    } else {
+      console.error(errorDesc, token, error, tokenType);
+    }
+  }
+
+  login() {
+    const { msalInstance } = this.state;
+    const { debug, graphScopes } = this.props;
+    msalInstance.loginPopup(graphScopes)
+      .then((idToken: string) => {
+        debug && console.log("'id_token' getting with 'loginPopup' SUCCEDEED: ", idToken);
+        return msalInstance.acquireTokenSilent(graphScopes);
+      })
+      .catch((error: any) => {
+        debug && console.log("'access_token' getting with 'acquireTokenSilent' is FAILED: ", error);
+        return msalInstance.acquireTokenPopup(graphScopes);
+      })
+      .then((accessToken: string) => {
+        debug && console.log("'access_token' getting SUCCEDEED: ", accessToken);
+        return this.getUserData(accessToken);
+      })
+      .catch((error: any) => {
+        console.error(error);
+        
+      });
+  }
+
+  getUserData(token: string) {
+    var headers = {
+      Authorization: `Bearer ${token}`
+    }
+    var options = {
+         method: "GET",
+         headers: headers
+    };
+    var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
+
+    fetch(graphEndpoint, options)
+      .then((response) => response.json())
+      .then(data => console.log(data))
+  }
+
+
   render() {
     const { buttonTheme, className } = this.props;
     return (
@@ -16,6 +81,7 @@ export default class MicrosoftLogin extends React.Component<
         <MicrosoftLoginButton
           buttonTheme={buttonTheme || "light"}
           buttonClassName={className}
+          onClick={this.login.bind(this)}
         />
       </div>
     );

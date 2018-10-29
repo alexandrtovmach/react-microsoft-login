@@ -14,7 +14,9 @@
     "deploy": "yarn build && gh-pages -d examples/dist",
     "prettify": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
-  "dependencies": {},
+  "dependencies": {
+    "msal": "^0.2.3"
+  },
   "devDependencies": {
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
