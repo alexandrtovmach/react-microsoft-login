@@ -2,10 +2,13 @@ import * as React from 'react';
 
 export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   color: string;
+  buttonTheme?: "dark_short" | "light_short" | "dark" | "light",
+  className?: string
 }
 
 export interface MicrosoftLoginButtonProps extends React.Props<MicrosoftLoginButton> {
-  theme: "dark_short" | "light_short" | "dark" | "light"
+  buttonTheme: "dark_short" | "light_short" | "dark" | "light",
+  buttonClassName?: string
 }
 
 declare class MicrosoftLogin extends React.Component<MicrosoftLoginProps, any> {
