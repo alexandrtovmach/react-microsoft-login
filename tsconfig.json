@@ -9,7 +9,8 @@
     "declaration": false,
     "sourceMap": true,
     "jsx": "react",
-    "typeRoots": ["index.d.ts", "node_modules/@types"]
+    "typeRoots": ["index.d.ts", "node_modules/@types"],
+    "lib": ["dom", "es7"]
   },
   "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

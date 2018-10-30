@@ -7,11 +7,18 @@ const conf = {
   graphScopes: ["user.read"]
 };
 
+const loginHandler = (err, data) => {
+  console.log(err, data);
+};
+
 const App = () => (
   <MicrosoftLogin
-    buttonTheme="light"
+    withUserData
+    debug
     clientId={conf.client_id}
-    graphScopes={conf.graphScopes}
+    authCallback={loginHandler}
+    buttonTheme="dark"
+    // graphScopes={conf.graphScopes}
   />
 );
 render(<App />, document.getElementById("root"));
