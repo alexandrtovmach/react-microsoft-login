@@ -8,10 +8,10 @@
   "scripts": {
     "watch": "tsc --watch",
     "develop": "webpack-dev-server --mode development",
-    "precommit": "lint-staged",
-    "prepare": "lint-staged && yarn build",
     "build": "rm -rf ./dist && tsc && webpack",
-    "deploy": "yarn build && gh-pages -d examples/dist",
+    "prepare": "lint-staged && yarn build",
+    "deploy": "yarn prepare && gh-pages -d examples/dist",
+    "precommit": "lint-staged",
     "prettify": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
   "dependencies": {

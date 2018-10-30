@@ -12,7 +12,7 @@ export default class MicrosoftLoginButton extends React.Component<
       isDark = bg === "dark",
       styleObj = {
         cursor: "pointer"
-      }
+      };
 
     if (short) {
       return (
