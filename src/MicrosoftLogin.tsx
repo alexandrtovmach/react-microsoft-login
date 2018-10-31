@@ -11,7 +11,7 @@ export default class MicrosoftLogin extends React.Component<
   constructor(props: any) {
     super(props);
     const { debug, graphScopes, withUserData } = props;
-    const scope = ((graphScopes && graphScopes.length) || []) as string[];
+    const scope = (graphScopes || []) as string[];
     scope.some(el => el.toLowerCase() === "user.read") ||
       scope.push("user.read");
 
