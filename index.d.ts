@@ -1,13 +1,40 @@
 import * as React from 'react';
 
 export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
+  /**
+   * Application (client) ID
+   */
   clientId: string,
+
+  /**
+   * Callback function which takes two arguments (error, authData)
+   */
   authCallback: (error: any, result?: any) => void,
+
+  /**
+   * Array of Graph API permission names.
+   */
   graphScopes?: [string],
+
+  /**
+   * Name of theme for button style. 
+   */
   buttonTheme?: "dark_short" | "light_short" | "dark" | "light",
-  className?: string,
+
+  /**
+   * Make an additional request to GraphAPI to get user data.
+   */
   withUserData?: boolean,
+
+  /**
+   * Enable detailed logs of authorization process.
+   */
   debug?: boolean,
+  
+  /**
+   * Additional class name string.
+   */
+  className?: string,
 }
 
 export interface MicrosoftLoginButtonProps extends React.Props<MicrosoftLoginButton> {
