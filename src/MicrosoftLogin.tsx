@@ -4,6 +4,8 @@ import { UserAgentApplication } from "msal";
 import { MicrosoftLoginProps, GraphAPIUserData } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
 
+const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
+
 export default class MicrosoftLogin extends React.Component<
   MicrosoftLoginProps,
   any
@@ -16,7 +18,10 @@ export default class MicrosoftLogin extends React.Component<
       scope.push("user.read");
 
     this.state = {
-      msalInstance: new UserAgentApplication(props.clientId, null, () => {}),
+      msalInstance:
+        props.clientId &&
+        CLIENT_ID_REGEX.test(props.clientId) &&
+        new UserAgentApplication(props.clientId, null, () => {}),
       scope: scope,
       debug: debug || false,
       withUserData: withUserData || false
@@ -24,9 +29,30 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   componentDidMount() {
-    const { msalInstance, scope, debug, withUserData } = this.state;
-    const { authCallback } = this.props;
+    const { msalInstance } = this.state;
     // avoid duplicate code execution on page load in case of iframe and popup window.
+    if (msalInstance) {
+      this.initialize(msalInstance);
+    } else {
+      this.log("Initialization", "clientID broken or not provided", true);
+    }
+  }
+
+  componentDidUpdate(prevProps: any, prevState: any) {
+    const { clientId } = this.props;
+    if (prevProps.clientId !== clientId) {
+      this.setState({
+        msalInstance:
+          clientId &&
+          CLIENT_ID_REGEX.test(clientId) &&
+          new UserAgentApplication(clientId, null, () => {})
+      });
+    }
+  }
+
+  initialize(msalInstance: any) {
+    const { scope, debug, withUserData } = this.state;
+    const { authCallback } = this.props;
     if (
       msalInstance.getUser() &&
       !msalInstance.isCallback(window.location.hash) &&
@@ -62,12 +88,16 @@ export default class MicrosoftLogin extends React.Component<
   login() {
     const { msalInstance, scope, withUserData, debug } = this.state;
     const { authCallback } = this.props;
-    debug && this.log("Login STARTED", true);
 
-    if (this.checkToIE()) {
-      this.redirectLogin(msalInstance, scope, debug);
+    if (msalInstance) {
+      debug && this.log("Login STARTED", true);
+      if (this.checkToIE()) {
+        this.redirectLogin(msalInstance, scope, debug);
+      } else {
+        this.popupLogin(msalInstance, scope, withUserData, authCallback, debug);
+      }
     } else {
-      this.popupLogin(msalInstance, scope, withUserData, authCallback, debug);
+      this.log("Login FAILED", "clientID broken or not provided", true);
     }
   }
 
