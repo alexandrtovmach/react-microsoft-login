@@ -6,29 +6,29 @@
 
 ## Get started
 1. Install package: 
-```
-yarn add react-microsoft-login
-```
+    ```
+    yarn add react-microsoft-login
+    ```
 2. Import and configure component:
-```
-import React from "react";
-import MicrosoftLogin from "react-microsoft-login";
+    ```
+    import React from "react";
+    import MicrosoftLogin from "react-microsoft-login";
 
-export default props => {
-	
-    const authHandler = (err, data) => {
-    	console.log(err, data)
+    export default props => {
+        
+        const authHandler = (err, data) => {
+            console.log(err, data)
+        }
+        
+        return (
+            <MicrosoftLogin
+            clientId={YOUR_CLIENT_ID}
+            authCallback={authHandler}
+            />
+        )
     }
-       
-    return (
-    	<MicrosoftLogin
-          clientId={YOUR_CLIENT_ID}
-          authCallback={authHandler}
-        />
-    )
-}
 
-```
+    ```
 3. `YOUR_CLIENT_ID` is the key which you need to generate for your Microsoft app. [How to create Microsoft app?](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-v2-register-an-app) When finished, on the app Overview page, note down the Application (client) ID value.
 
 
@@ -49,8 +49,8 @@ export default props => {
 
 ## To do
 1. ~~Add regex validation for clientId~~
-2. Research about possibility to add validation for graph scopes
-3. Finish implementing support for IE and Edge
+2. ~~Research about possibility to add validation for graph scopes~~
+3. ~~Finish implementing support for IE and Edge~~
 
 ## License
 
