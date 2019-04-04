@@ -34,17 +34,18 @@
 
 ## API
 
-| Parameter     | Type       | Default       | Description                                                     |
-|---------------|------------|---------------|-----------------------------------------------------------------|
-| clientId      | string     | required      | Application (client) ID                                         |
-| authCallback  | function   | required      | Callback function which takes two arguments `(error, authData)` |
-| graphScopes   | array      |`["user.read"]`| Array of Graph API permission names. [More about Graph API permissions](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference).|
-| buttonTheme   | string     | `"light"`     | Name of theme for button style. Themes: `"light"` `"light_short"` `"dark"` `"dark_short"`. Styles come from [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps).|
-| withUserData  | boolean    | `false`       | Boolean flag to make an additional request to GraphAPI to get user data. |
-| debug         | boolean    | `false`       | Boolean flag to enable detailed logs of authorization process. |
-| className     | string     | `""`          | Additional class name string. |
+| Parameter     | Type       | Default         | Description                                                     |
+|---------------|------------|-----------------|-----------------------------------------------------------------|
+| clientId      | string     | required        | Application (client) ID                                         |
+| authCallback  | function   | required        | Callback function which takes two arguments `(error, authData)` |
+| graphScopes   | array      | `["user.read"]` | Array of Graph API permission names. [More about Graph API permissions](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference).|
+| tenantUrl     | string     | `""`            | A URL indicating a directory that MSAL can request tokens from. [More about MSAL tenant auth](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/MSAL-basics).|
+| buttonTheme   | string     | `"light"`       | Name of theme for button style. Themes: `"light"` `"light_short"` `"dark"` `"dark_short"`. Styles come from [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps).|
+| withUserData  | boolean    | `false`         | Boolean flag to make an additional request to GraphAPI to get user data. |
+| debug         | boolean    | `false`         | Boolean flag to enable detailed logs of authorization process. |
+| className     | string     | `""`            | Additional class name string. |
 
-
+  
 
 
 ## To do

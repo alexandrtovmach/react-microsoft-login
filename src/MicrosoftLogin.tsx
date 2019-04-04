@@ -21,7 +21,11 @@ export default class MicrosoftLogin extends React.Component<
       msalInstance:
         props.clientId &&
         CLIENT_ID_REGEX.test(props.clientId) &&
-        new UserAgentApplication(props.clientId, null, () => {}),
+        new UserAgentApplication(
+          props.clientId,
+          props.tenantUrl || null,
+          () => {}
+        ),
       scope: scope,
       debug: debug || false,
       withUserData: withUserData || false
@@ -39,13 +43,13 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const { clientId } = this.props;
-    if (prevProps.clientId !== clientId) {
+    const { clientId, tenantUrl } = this.props;
+    if (prevProps.clientId !== clientId || prevProps.tenantUrl !== tenantUrl) {
       this.setState({
         msalInstance:
           clientId &&
           CLIENT_ID_REGEX.test(clientId) &&
-          new UserAgentApplication(clientId, null, () => {})
+          new UserAgentApplication(clientId, tenantUrl || null, () => {})
       });
     }
   }
