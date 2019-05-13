@@ -22,8 +22,8 @@
         
         return (
             <MicrosoftLogin
-            clientId={YOUR_CLIENT_ID}
-            authCallback={authHandler}
+                clientId={YOUR_CLIENT_ID}
+                authCallback={authHandler}
             />
         )
     }
@@ -52,6 +52,7 @@
 1. ~~Add regex validation for clientId~~
 2. ~~Research about possibility to add validation for graph scopes~~
 3. ~~Finish implementing support for IE and Edge~~
+4. Check possibilities of design customisation
 
 ## License
 
