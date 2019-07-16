@@ -53,6 +53,7 @@
 2. ~~Research about possibility to add validation for graph scopes~~
 3. ~~Finish implementing support for IE and Edge~~
 4. Check possibilities of design customisation
+5. Handle token expiration [with ADAL.js](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-page-application#token-expiration)
 
 ## License
 
