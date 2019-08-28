@@ -89,7 +89,7 @@ export default class MicrosoftLogin extends React.Component<
     }
   }
 
-  login() {
+  login = () => {
     const { msalInstance, scope, withUserData, debug } = this.state;
     const { authCallback } = this.props;
 
@@ -103,7 +103,7 @@ export default class MicrosoftLogin extends React.Component<
     } else {
       this.log("Login FAILED", "clientID broken or not provided", true);
     }
-  }
+  };
 
   getGraphAPITokenAndUser(
     msalInstance: any,
@@ -220,15 +220,15 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   render() {
-    const { buttonTheme, className } = this.props;
-    return (
-      <div>
-        <MicrosoftLoginButton
-          buttonTheme={buttonTheme || "light"}
-          buttonClassName={className}
-          onClick={this.login.bind(this)}
-        />
-      </div>
+    const { buttonTheme, className, children } = this.props;
+    return children ? (
+      <div onClick={this.login}>{children}</div>
+    ) : (
+      <MicrosoftLoginButton
+        buttonTheme={buttonTheme || "light"}
+        buttonClassName={className}
+        onClick={this.login}
+      />
     );
   }
 }

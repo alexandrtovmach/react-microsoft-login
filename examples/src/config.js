@@ -21,6 +21,6 @@ export default {
       key: 'light_short',
       value: 'light_short',
       text: 'light_short'
-    },
+    }
   ]
 }
