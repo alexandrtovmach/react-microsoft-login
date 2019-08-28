@@ -12,6 +12,8 @@ export default class ExaplePage extends React.Component {
       clientId: config.client_id,
       buttonTheme: "light",
       withUserData: true,
+      customButton: false,
+      forceRedirectStrategy: false,
       debug: true
     };
 
@@ -31,7 +33,7 @@ export default class ExaplePage extends React.Component {
   };
 
   render() {
-    const { clientId, buttonTheme, withUserData, debug, customButton } = this.state;
+    const { clientId, buttonTheme, withUserData, debug, customButton, forceRedirectStrategy } = this.state;
     return (
       <div className="viewport">
         <Segment basic>
@@ -88,6 +90,14 @@ export default class ExaplePage extends React.Component {
                 </Form.Field>
                 <Form.Field>
                   <Radio
+                    onChange={(e, data) => this.handleChange(data.checked, "forceRedirectStrategy")}
+                    label="Force redirect strategy"
+                    defaultChecked={forceRedirectStrategy}
+                    toggle
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <Radio
                     onChange={(e, data) => this.handleChange(data.checked, "customButton")}
                     label="Custom button content (children prop)"
                     defaultChecked={customButton}
@@ -115,6 +125,7 @@ export default class ExaplePage extends React.Component {
                 withUserData={withUserData}
                 debug={debug}
                 clientId={clientId}
+                forceRedirectStrategy={forceRedirectStrategy}
                 authCallback={this.loginHandler}
                 buttonTheme={buttonTheme}
                 className="my-custom-class"
