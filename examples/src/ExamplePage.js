@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Header, Label, Icon, Segment, Input, Select, Radio, Form } from 'semantic-ui-react';
+import { Container, Header, Label, Icon, Segment, Input, Select, Radio, Form, Button } from 'semantic-ui-react';
 
 import config from "./config";
 import MicrosoftLogin from "../../dist";
@@ -19,7 +19,7 @@ export default class ExaplePage extends React.Component {
     this.loginHandler = this.loginHandler.bind(this);
   }
 
-
+  
   handleChange(value, type) {
     this.setState({
       [type]: value
@@ -31,7 +31,7 @@ export default class ExaplePage extends React.Component {
   };
 
   render() {
-    const { clientId, buttonTheme, withUserData, debug } = this.state;
+    const { clientId, buttonTheme, withUserData, debug, customButton } = this.state;
     return (
       <div className="viewport">
         <Segment basic>
@@ -87,6 +87,14 @@ export default class ExaplePage extends React.Component {
                   />
                 </Form.Field>
                 <Form.Field>
+                  <Radio
+                    onChange={(e, data) => this.handleChange(data.checked, "customButton")}
+                    label="Custom button content (children prop)"
+                    defaultChecked={customButton}
+                    toggle
+                  />
+                </Form.Field>
+                <Form.Field>
                   <label>Auth callback</label>
                   <code>
                     {`(err, data) => console.log(err, data)`}
@@ -111,6 +119,7 @@ export default class ExaplePage extends React.Component {
                 buttonTheme={buttonTheme}
                 className="my-custom-class"
                 graphScopes={config.graphScopes}
+                children={customButton && <Button>Custom button</Button>}
               />
             </Segment>
           </Container>
