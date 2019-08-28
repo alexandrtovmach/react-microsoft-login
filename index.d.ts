@@ -45,6 +45,12 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
    * Additional class name string.
    */
   className?: string,
+  
+  /**
+   * Force redirect login strategy. This strategy used by default on IE browsers to avoid issues.
+   * If set true login will be executed only with redirect strategy in all browsers.
+   */
+  forceRedirectStrategy?: boolean,
 }
 
 export interface MicrosoftLoginButtonProps extends React.Props<MicrosoftLoginButton> {

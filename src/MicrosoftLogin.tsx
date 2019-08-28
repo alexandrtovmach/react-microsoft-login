@@ -12,7 +12,7 @@ export default class MicrosoftLogin extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    const { debug, graphScopes, withUserData } = props;
+    const { graphScopes, withUserData } = props;
     const scope = (graphScopes || []) as string[];
     scope.some(el => el.toLowerCase() === "user.read") ||
       scope.push("user.read");
@@ -27,7 +27,6 @@ export default class MicrosoftLogin extends React.Component<
           () => {}
         ),
       scope: scope,
-      debug: debug || false,
       withUserData: withUserData || false
     };
   }
@@ -55,8 +54,8 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   initialize(msalInstance: any) {
-    const { scope, debug, withUserData } = this.state;
-    const { authCallback } = this.props;
+    const { scope, withUserData } = this.state;
+    const { authCallback, debug = false } = this.props;
     if (
       msalInstance.getUser() &&
       !msalInstance.isCallback(window.location.hash) &&
@@ -90,12 +89,16 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   login = () => {
-    const { msalInstance, scope, withUserData, debug } = this.state;
-    const { authCallback } = this.props;
+    const { msalInstance, scope, withUserData } = this.state;
+    const {
+      authCallback,
+      forceRedirectStrategy = false,
+      debug = false
+    } = this.props;
 
     if (msalInstance) {
       debug && this.log("Login STARTED", true);
-      if (this.checkToIE()) {
+      if (forceRedirectStrategy || this.checkToIE()) {
         this.redirectLogin(msalInstance, scope, debug);
       } else {
         this.popupLogin(msalInstance, scope, withUserData, authCallback, debug);
@@ -179,7 +182,7 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   getUserData(token: string) {
-    const { authCallback, debug } = this.props;
+    const { authCallback, debug = false } = this.props;
     debug && this.log("Fetch Graph API user data STARTED", true);
     const options = {
       method: "GET",
