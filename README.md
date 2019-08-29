@@ -7,12 +7,12 @@
 ## Get started
 
 1. Install package:
-   ```
+   ```sh
    yarn add react-microsoft-login
    ```
 2. Import and configure component:
 
-   ```
+   ```jsx
    import React from "react";
    import MicrosoftLogin from "react-microsoft-login";
 
