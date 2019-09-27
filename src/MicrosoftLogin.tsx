@@ -46,9 +46,7 @@ export default class MicrosoftLogin extends React.Component<
   componentDidMount() {
     const { msalInstance } = this.state;
     // avoid duplicate code execution in iframe and popup window on page load
-    if (msalInstance) {
-      // console.log(msalInstance.getAccount());
-    } else {
+    if (!msalInstance) {
       this.log("Initialization", "clientID broken or not provided", true);
     }
   }
@@ -67,28 +65,15 @@ export default class MicrosoftLogin extends React.Component<
     const {
       withUserData = false,
       authCallback,
-      forceRedirectStrategy = false,
-      debug = false
+      forceRedirectStrategy = false
     } = this.props;
 
     if (msalInstance) {
       this.log("Login STARTED");
       if (forceRedirectStrategy || this.checkToIE()) {
-        this.redirectLogin(
-          msalInstance,
-          scopes,
-          withUserData,
-          authCallback,
-          debug
-        );
+        this.redirectLogin(msalInstance, scopes);
       } else {
-        this.popupLogin(
-          msalInstance,
-          scopes,
-          withUserData,
-          authCallback,
-          debug
-        );
+        this.popupLogin(msalInstance, scopes, withUserData, authCallback);
       }
     } else {
       this.log("Login FAILED", "clientID broken or not provided", true);
@@ -100,8 +85,7 @@ export default class MicrosoftLogin extends React.Component<
     scopes: string[],
     withUserData: boolean,
     authCallback: any,
-    isRedirect: boolean,
-    debug: boolean
+    isRedirect: boolean
   ) {
     return msalInstance
       .acquireTokenSilent({ scopes })
@@ -117,9 +101,13 @@ export default class MicrosoftLogin extends React.Component<
             isRedirect ? "redirect" : "popup"
           } STARTED`
         );
-        return isRedirect
-          ? msalInstance.acquireTokenRedirect({ scopes })
-          : msalInstance.acquireTokenPopup({ scopes });
+        if (isRedirect) {
+          this.log("Fetch Graph API 'access_token' with redirect STARTED");
+          msalInstance.acquireTokenRedirect({ scopes });
+        } else {
+          this.log("Fetch Graph API 'access_token' with popup STARTED");
+          msalInstance.acquireTokenPopup({ scopes });
+        }
       })
       .then((authResponseWithAccessToken: AuthResponse) => {
         this.log(
@@ -143,8 +131,7 @@ export default class MicrosoftLogin extends React.Component<
     msalInstance: any,
     scopes: string[],
     withUserData: boolean,
-    authCallback: any,
-    debug: boolean
+    authCallback: any
   ) {
     this.log("Fetch Azure AD 'token' with popup STARTED");
     msalInstance
@@ -158,8 +145,7 @@ export default class MicrosoftLogin extends React.Component<
           scopes,
           withUserData,
           authCallback,
-          false,
-          debug
+          false
         );
       })
       .catch((error: Error) => {
@@ -168,38 +154,17 @@ export default class MicrosoftLogin extends React.Component<
       });
   }
 
-  redirectLogin(
-    msalInstance: any,
-    scopes: string[],
-    withUserData: boolean,
-    authCallback: any,
-    debug: boolean
-  ) {
+  redirectLogin(msalInstance: any, scopes: string[]) {
     this.log("Fetch Azure AD 'token' with redirect STARTED");
-    msalInstance.handleRedirectCallback((err: Error, response: any) => {
-      console.log(response);
-      if (response) {
-        this.log("Fetch Azure AD 'token' with redirect SUCCEDEED");
-
-        this.log("Fetch Graph API 'access_token' in silent mode STARTED");
-        this.getGraphAPITokenAndUser(
-          msalInstance,
-          scopes,
-          withUserData,
-          authCallback,
-          true,
-          debug
-        );
-      } else {
-        this.log("Fetch Azure AD 'token' with redirect FAILED", err, true);
-        authCallback(err);
-      }
+    msalInstance.handleRedirectCallback(() => {
+      console.log("handleRedirectCallback");
     });
-    msalInstance.loginRedirect({ scopes, forceRefresh: false });
+    console.log("loginRedirect");
+    msalInstance.loginRedirect({ scopes });
   }
 
   getUserData(authResponseWithAccessToken: AuthResponse) {
-    const { authCallback, debug = false } = this.props;
+    const { authCallback } = this.props;
     const { accessToken } = authResponseWithAccessToken;
     this.log("Fetch Graph API user data STARTED");
     const options = {
