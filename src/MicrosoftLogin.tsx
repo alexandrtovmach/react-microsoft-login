@@ -62,9 +62,9 @@ export default class MicrosoftLogin extends React.Component<
       window.localStorage.outlook_login_initiated
     ) {
       window.localStorage.removeItem("outlook_login_initiated");
-      debug && this.log("Fetch Azure AD 'token' with redirect SUCCEDEED", true);
+      debug && this.log("Fetch Azure AD 'token' with redirect SUCCEDEED");
       debug &&
-        this.log("Fetch Graph API 'access_token' in silent mode STARTED", true);
+        this.log("Fetch Graph API 'access_token' in silent mode STARTED");
       this.getGraphAPITokenAndUser(
         msalInstance,
         scope,
@@ -97,7 +97,7 @@ export default class MicrosoftLogin extends React.Component<
     } = this.props;
 
     if (msalInstance) {
-      debug && this.log("Login STARTED", true);
+      debug && this.log("Login STARTED");
       if (forceRedirectStrategy || this.checkToIE()) {
         this.redirectLogin(msalInstance, scope, debug);
       } else {
@@ -129,8 +129,7 @@ export default class MicrosoftLogin extends React.Component<
           this.log(
             `Fetch Graph API 'access_token' with ${
               isRedirect ? "redirect" : "popup"
-            } STARTED`,
-            true
+            } STARTED`
           );
         return isRedirect
           ? msalInstance.acquireTokenRedirect(scope)
@@ -142,7 +141,7 @@ export default class MicrosoftLogin extends React.Component<
         if (withUserData) {
           this.getUserData(accessToken);
         } else {
-          debug && this.log("Login SUCCEDED", true);
+          debug && this.log("Login SUCCEDED");
           authCallback(null, { accessToken });
         }
       })
@@ -159,31 +158,38 @@ export default class MicrosoftLogin extends React.Component<
     authCallback: any,
     debug: boolean
   ) {
-    debug && this.log("Fetch Azure AD 'token' with popup STARTED", true);
-    msalInstance.loginPopup(scope).then((idToken: string) => {
-      debug && this.log("Fetch Azure AD 'token' with popup SUCCEDEED", idToken);
-      debug &&
-        this.log("Fetch Graph API 'access_token' in silent mode STARTED", true);
-      this.getGraphAPITokenAndUser(
-        msalInstance,
-        scope,
-        withUserData,
-        authCallback,
-        false,
-        debug
-      );
-    });
+    debug && this.log("Fetch Azure AD 'token' with popup STARTED");
+    msalInstance
+      .loginPopup(scope)
+      .then((idToken: string) => {
+        debug &&
+          this.log("Fetch Azure AD 'token' with popup SUCCEDEED", idToken);
+        debug &&
+          this.log("Fetch Graph API 'access_token' in silent mode STARTED");
+        this.getGraphAPITokenAndUser(
+          msalInstance,
+          scope,
+          withUserData,
+          authCallback,
+          false,
+          debug
+        );
+      })
+      .catch((error: any) => {
+        this.log("Fetch Azure AD 'token' with popup FAILED", error, true);
+        authCallback(error);
+      });
   }
 
   redirectLogin(msalInstance: any, scope: string[], debug: boolean) {
-    debug && this.log("Fetch Azure AD 'token' with redirect STARTED", true);
+    debug && this.log("Fetch Azure AD 'token' with redirect STARTED");
     window.localStorage.setItem("outlook_login_initiated", "true");
     msalInstance.loginRedirect(scope);
   }
 
   getUserData(token: string) {
     const { authCallback, debug = false } = this.props;
-    debug && this.log("Fetch Graph API user data STARTED", true);
+    debug && this.log("Fetch Graph API user data STARTED");
     const options = {
       method: "GET",
       headers: {
@@ -194,7 +200,7 @@ export default class MicrosoftLogin extends React.Component<
       .then((response: Response) => response.json())
       .then((userData: GraphAPIUserData) => {
         debug && this.log("Fetch Graph API user data SUCCEDEED", userData);
-        debug && this.log("Login SUCCEDED", true);
+        debug && this.log("Login SUCCEDED");
         authCallback(null, {
           ...userData,
           accessToken: token
@@ -212,13 +218,13 @@ export default class MicrosoftLogin extends React.Component<
     return isIE || isEdge;
   }
 
-  log(name: string, content: any, isError?: boolean) {
+  log(name: string, content?: any, isError?: boolean) {
     const style = `background-color: ${
       isError ? "#990000" : "#009900"
     }; color: #ffffff; font-weight: 700; padding: 2px`;
     console.groupCollapsed("MSLogin debug");
     console.log(`%c${name}`, style);
-    console.log(content);
+    content && console.log(content);
     console.groupEnd();
   }
 
