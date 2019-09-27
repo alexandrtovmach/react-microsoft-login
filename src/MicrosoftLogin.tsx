@@ -12,7 +12,7 @@ export default class MicrosoftLogin extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    const { graphScopes, withUserData } = props;
+    const { graphScopes } = props;
     const scope = (graphScopes || []) as string[];
     scope.some(el => el.toLowerCase() === "user.read") ||
       scope.push("user.read");
@@ -26,8 +26,7 @@ export default class MicrosoftLogin extends React.Component<
           props.tenantUrl || null,
           () => {}
         ),
-      scope: scope,
-      withUserData: withUserData || false
+      scope: scope
     };
   }
 
@@ -54,8 +53,8 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   initialize(msalInstance: any) {
-    const { scope, withUserData } = this.state;
-    const { authCallback, debug = false } = this.props;
+    const { scope } = this.state;
+    const { authCallback, debug = false, withUserData = false } = this.props;
     if (
       msalInstance.getUser() &&
       !msalInstance.isCallback(window.location.hash) &&
@@ -89,8 +88,9 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   login = () => {
-    const { msalInstance, scope, withUserData } = this.state;
+    const { msalInstance, scope } = this.state;
     const {
+      withUserData = false,
       authCallback,
       forceRedirectStrategy = false,
       debug = false
