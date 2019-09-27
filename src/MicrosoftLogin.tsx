@@ -5,34 +5,36 @@ import { MicrosoftLoginProps, GraphAPIUserData } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
 
 const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
-
+const getUserAgentApp = (clientId: string, tenantUrl?: string) =>
+  clientId &&
+  CLIENT_ID_REGEX.test(clientId) &&
+  new UserAgentApplication({
+    auth: {
+      clientId,
+      authority: tenantUrl,
+      validateAuthority: true
+    }
+  });
 export default class MicrosoftLogin extends React.Component<
   MicrosoftLoginProps,
   any
 > {
   constructor(props: any) {
     super(props);
-    const { graphScopes } = props;
+    const { graphScopes, clientId, tenantUrl } = props;
     const scope = (graphScopes || []) as string[];
     scope.some(el => el.toLowerCase() === "user.read") ||
       scope.push("user.read");
 
     this.state = {
-      msalInstance:
-        props.clientId &&
-        CLIENT_ID_REGEX.test(props.clientId) &&
-        new UserAgentApplication(
-          props.clientId,
-          props.tenantUrl || null,
-          () => {}
-        ),
+      msalInstance: getUserAgentApp(clientId, tenantUrl),
       scope: scope
     };
   }
 
   componentDidMount() {
     const { msalInstance } = this.state;
-    // avoid duplicate code execution on page load in case of iframe and popup window.
+    // avoid duplicate code execution in iframe and popup window on page load
     if (msalInstance) {
       this.initialize(msalInstance);
     } else {
@@ -40,14 +42,11 @@ export default class MicrosoftLogin extends React.Component<
     }
   }
 
-  componentDidUpdate(prevProps: any, prevState: any) {
+  componentDidUpdate(prevProps: any) {
     const { clientId, tenantUrl } = this.props;
     if (prevProps.clientId !== clientId || prevProps.tenantUrl !== tenantUrl) {
       this.setState({
-        msalInstance:
-          clientId &&
-          CLIENT_ID_REGEX.test(clientId) &&
-          new UserAgentApplication(clientId, tenantUrl || null, () => {})
+        msalInstance: getUserAgentApp(clientId, tenantUrl)
       });
     }
   }
@@ -56,7 +55,7 @@ export default class MicrosoftLogin extends React.Component<
     const { scope } = this.state;
     const { authCallback, debug = false, withUserData = false } = this.props;
     if (
-      msalInstance.getUser() &&
+      msalInstance.getAccount() &&
       !msalInstance.isCallback(window.location.hash) &&
       window.localStorage.outlook_login_initiated
     ) {
@@ -117,7 +116,7 @@ export default class MicrosoftLogin extends React.Component<
     debug: boolean
   ) {
     return msalInstance
-      .acquireTokenSilent(scope)
+      .acquireTokenSilent({ scopes: scope })
       .catch((error: any) => {
         debug &&
           this.log(
@@ -132,8 +131,8 @@ export default class MicrosoftLogin extends React.Component<
             } STARTED`
           );
         return isRedirect
-          ? msalInstance.acquireTokenRedirect(scope)
-          : msalInstance.acquireTokenPopup(scope);
+          ? msalInstance.acquireTokenRedirect({ scopes: scope })
+          : msalInstance.acquireTokenPopup({ scopes: scope });
       })
       .then((accessToken: string) => {
         debug &&
