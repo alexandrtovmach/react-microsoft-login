@@ -5,11 +5,16 @@ import { MicrosoftLoginProps, GraphAPIUserData } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
 
 const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
-const getUserAgentApp = (clientId: string, tenantUrl?: string) => {
+const getUserAgentApp = (
+  clientId: string,
+  tenantUrl?: string,
+  redirectUri?: string
+) => {
   if (clientId && CLIENT_ID_REGEX.test(clientId)) {
     return new UserAgentApplication({
       auth: {
         clientId,
+        redirectUri,
         authority: tenantUrl,
         validateAuthority: true,
         navigateToLoginRequestUrl: false
@@ -37,9 +42,9 @@ export default class MicrosoftLogin extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    const { graphScopes, clientId, tenantUrl } = props;
+    const { graphScopes, clientId, tenantUrl, redirectUri } = props;
     this.state = {
-      msalInstance: getUserAgentApp(clientId, tenantUrl),
+      msalInstance: getUserAgentApp(clientId, tenantUrl, redirectUri),
       scopes: getScopes(graphScopes)
     };
   }
@@ -79,10 +84,14 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   componentDidUpdate(prevProps: any) {
-    const { clientId, tenantUrl } = this.props;
-    if (prevProps.clientId !== clientId || prevProps.tenantUrl !== tenantUrl) {
+    const { clientId, tenantUrl, redirectUri } = this.props;
+    if (
+      prevProps.clientId !== clientId ||
+      prevProps.tenantUrl !== tenantUrl ||
+      prevProps.redirectUri !== redirectUri
+    ) {
       this.setState({
-        msalInstance: getUserAgentApp(clientId, tenantUrl)
+        msalInstance: getUserAgentApp(clientId, tenantUrl, redirectUri)
       });
     }
   }

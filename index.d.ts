@@ -54,6 +54,11 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
    * If set true login will be executed only with redirect strategy in all browsers.
    */
   forceRedirectStrategy?: boolean;
+
+  /**
+   * The redirect URI of the application, this should be same as the value in the application registration portal.
+   */
+  redirectUri?: string;
 }
 
 export interface MicrosoftLoginButtonProps
