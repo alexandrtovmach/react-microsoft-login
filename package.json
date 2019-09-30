@@ -2,7 +2,7 @@
   "name": "react-microsoft-login",
   "description": "React component for easy OAuth with Microsoft services on client side.",
   "main": "dist/index.js",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "author": "alexandrtovmach@gmail.com",
   "bugs": "https://github.com/alexandrtovmach/react-microsoft-login/issues",
   "private": false,
