@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Account, AuthResponse } from "msal";
+import { Account, AuthResponse, AuthError } from "msal";
 import { IdToken } from "msal/lib-commonjs/IdToken";
 
+type ButtonTheme = "dark_short" | "light_short" | "dark" | "light";
 export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Application (client) ID
@@ -11,7 +12,7 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Callback function which takes two arguments (error, authData)
    */
-  authCallback: (error: any, result?: any) => void;
+  authCallback: (error?: AuthError, result?: AuthResponse) => void;
 
   /**
    * Array of Graph API permission names.
@@ -31,7 +32,7 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Name of theme for button style.
    */
-  buttonTheme?: "dark_short" | "light_short" | "dark" | "light";
+  buttonTheme?: ButtonTheme;
 
   /**
    * Make an additional request to GraphAPI to get user data.
@@ -57,7 +58,7 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
 
 export interface MicrosoftLoginButtonProps
   extends React.Props<MicrosoftLoginButton> {
-  buttonTheme: "dark_short" | "light_short" | "dark" | "light";
+  buttonTheme: ButtonTheme;
   buttonClassName?: string;
   onClick?: any;
 }

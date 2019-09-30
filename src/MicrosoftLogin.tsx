@@ -194,7 +194,7 @@ export default class MicrosoftLogin extends React.Component<
       .then((userData: GraphAPIUserData) => {
         this.log("Fetch Graph API user data SUCCEDEED", userData);
         this.log("Login SUCCEDED");
-        authCallback(null, {
+        authCallback(undefined, {
           ...userData,
           ...authResponseWithAccessToken
         });
