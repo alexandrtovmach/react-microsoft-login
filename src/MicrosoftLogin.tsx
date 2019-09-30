@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UserAgentApplication, AuthResponse } from "msal";
+import { UserAgentApplication, AuthResponse, AuthError } from "msal";
 
 import { MicrosoftLoginProps, GraphAPIUserData } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
@@ -11,7 +11,8 @@ const getUserAgentApp = (clientId: string, tenantUrl?: string) => {
       auth: {
         clientId,
         authority: tenantUrl,
-        validateAuthority: true
+        validateAuthority: true,
+        navigateToLoginRequestUrl: false
       }
     });
   }
@@ -44,10 +45,36 @@ export default class MicrosoftLogin extends React.Component<
   }
 
   componentDidMount() {
-    const { msalInstance } = this.state;
-    // avoid duplicate code execution in iframe and popup window on page load
+    const { msalInstance, scopes } = this.state;
+    const { authCallback, withUserData = false } = this.props;
     if (!msalInstance) {
       this.log("Initialization", "clientID broken or not provided", true);
+    } else {
+      msalInstance.handleRedirectCallback(
+        (error: AuthError, authResponse: AuthResponse) => {
+          if (!error && authResponse) {
+            this.log(
+              "Fetch Azure AD 'token' with redirect SUCCEDEED",
+              authResponse
+            );
+            this.log("Fetch Graph API 'access_token' in silent mode STARTED");
+            this.getGraphAPITokenAndUser(
+              msalInstance,
+              scopes,
+              withUserData,
+              authCallback,
+              true
+            );
+          } else {
+            this.log(
+              "Fetch Azure AD 'token' with redirect FAILED",
+              error,
+              true
+            );
+            authCallback(error);
+          }
+        }
+      );
     }
   }
 
@@ -81,25 +108,19 @@ export default class MicrosoftLogin extends React.Component<
   };
 
   getGraphAPITokenAndUser(
-    msalInstance: any,
-    scopes: string[],
+    msalInstance: UserAgentApplication,
+    scopes: [string],
     withUserData: boolean,
     authCallback: any,
     isRedirect: boolean
   ) {
     return msalInstance
       .acquireTokenSilent({ scopes })
-      .catch((error: Error) => {
+      .catch((error: any) => {
         this.log(
           "Fetch Graph API 'access_token' in silent mode is FAILED",
           error,
           true
-        );
-
-        this.log(
-          `Fetch Graph API 'access_token' with ${
-            isRedirect ? "redirect" : "popup"
-          } STARTED`
         );
         if (isRedirect) {
           this.log("Fetch Graph API 'access_token' with redirect STARTED");
@@ -121,24 +142,23 @@ export default class MicrosoftLogin extends React.Component<
           authCallback(null, { authResponseWithAccessToken });
         }
       })
-      .catch((error: Error) => {
+      .catch((error: AuthError) => {
         this.log("Login FAILED", error, true);
         authCallback(error);
       });
   }
 
   popupLogin(
-    msalInstance: any,
-    scopes: string[],
+    msalInstance: UserAgentApplication,
+    scopes: [string],
     withUserData: boolean,
     authCallback: any
   ) {
     this.log("Fetch Azure AD 'token' with popup STARTED");
     msalInstance
-      .loginPopup(scopes)
+      .loginPopup({ scopes })
       .then((authResponse: AuthResponse) => {
         this.log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
-
         this.log("Fetch Graph API 'access_token' in silent mode STARTED");
         this.getGraphAPITokenAndUser(
           msalInstance,
@@ -148,18 +168,14 @@ export default class MicrosoftLogin extends React.Component<
           false
         );
       })
-      .catch((error: Error) => {
+      .catch((error: AuthError) => {
         this.log("Fetch Azure AD 'token' with popup FAILED", error, true);
         authCallback(error);
       });
   }
 
-  redirectLogin(msalInstance: any, scopes: string[]) {
+  redirectLogin(msalInstance: UserAgentApplication, scopes: [string]) {
     this.log("Fetch Azure AD 'token' with redirect STARTED");
-    msalInstance.handleRedirectCallback(() => {
-      console.log("handleRedirectCallback");
-    });
-    console.log("loginRedirect");
     msalInstance.loginRedirect({ scopes });
   }
 
