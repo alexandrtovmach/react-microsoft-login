@@ -1,8 +1,7 @@
-# react-microsoft-login
+# react-microsoft-login [![npm version](http://img.shields.io/npm/v/react-microsoft-login.svg)](https://npmjs.org/package/react-microsoft-login) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-microsoft-login) ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/alexandrtovmach/react-microsoft-login)
 
-> React component for login with Microsoft services using OAuth. Check [demo here](https://alexandrtovmach.github.io/react-microsoft-login/).
 
-[![NPM](https://nodei.co/npm/react-microsoft-login.png)](https://www.npmjs.com/package/react-microsoft-login)
+React component for login with Microsoft services using OAuth. Check [demo here](https://alexandrtovmach.github.io/react-microsoft-login/).
 
 ## Get started
 
