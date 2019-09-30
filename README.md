@@ -49,14 +49,6 @@
 | className             | string         | `""`            | Additional class name string.                                                                                                                                                                                                                       |
 | children              | ReactComponent | `null`          | Alternative way to provide custom button element as a children prop instead of [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps)                               |
 
-## To do
-
-1. ~~Add regex validation for clientId~~
-2. ~~Research about possibility to add validation for graph scopes~~
-3. ~~Finish implementing support for IE and Edge~~
-4. ~~Check possibilities of design customisation~~
-5. Handle token expiration [with ADAL.js](https://docs.microsoft.com/en-us/azure/active-directory/develop/single-page-application#token-expiration)
-
 ## License
 
 [MIT](https://github.com/nishanths/license/blob/master/LICENSE)
