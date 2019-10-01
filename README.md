@@ -1,9 +1,15 @@
 # react-microsoft-login [![npm version](http://img.shields.io/npm/v/react-microsoft-login.svg)](https://npmjs.org/package/react-microsoft-login) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-microsoft-login) ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/alexandrtovmach/react-microsoft-login)
 
 
-React component for login with Microsoft services using OAuth. Check [demo here](https://alexandrtovmach.github.io/react-microsoft-login/).
+React component for a simple login with Microsoft services, based on [Official Microsoft Authentication Library for JavaScript](https://github.com/AzureAD/microsoft-authentication-library-for-js).
 
-## Get started
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/28801003/65941169-0cc1c000-e433-11e9-909d-bd97be8100b2.jpg" alt="buttons">
+</p>
+
+**[DEMO HERE](https://alexandrtovmach.github.io/react-microsoft-login/)**
+
+## 🚀 Get started
 
 1. Install package:
    ```sh
@@ -28,7 +34,7 @@ React component for login with Microsoft services using OAuth. Check [demo here]
 
 3. `YOUR_CLIENT_ID` is the key which you need to generate for your Microsoft app. [How to create Microsoft app?](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-v2-register-an-app) When finished, on the app Overview page, note down the Application (client) ID value.
 
-## API
+##  API
 
 | Parameter             | Type           | Default                | Description                                                                                                                                                                                                                                         |
 | --------------------- | -------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
