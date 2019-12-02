@@ -3,6 +3,7 @@ import { UserAgentApplication, Account, AuthResponse, AuthError } from "msal";
 import { IdToken } from "msal/lib-commonjs/IdToken";
 
 type MicrosoftLoginButtonTheme = "dark_short" | "light_short" | "dark" | "light";
+type MicrosoftLoginPrompt = "login" | "select_account" | "consent" | "none";
 interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Application (client) ID
@@ -50,6 +51,12 @@ interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   className?: string;
 
   /**
+   * Prompt behavior for interactive requests
+   * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-prompt-behavior
+   */
+  prompt?: MicrosoftLoginPrompt;
+
+  /**
    * Force redirect login strategy. This strategy used by default on IE browsers to avoid issues.
    * If set true login will be executed only with redirect strategy in all browsers.
    */
@@ -95,6 +102,6 @@ declare class MicrosoftLogin extends React.Component<
   MicrosoftLoginState
 > {}
 
-export { MicrosoftLogin, MicrosoftLoginProps, MicrosoftLoginState, MicrosoftLoginButtonTheme, GraphAPIUserData };
+export { MicrosoftLogin, MicrosoftLoginProps, MicrosoftLoginState, MicrosoftLoginButtonTheme, MicrosoftLoginPrompt, GraphAPIUserData };
 
 export default MicrosoftLogin;
