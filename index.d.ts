@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Account, AuthResponse, AuthError } from "msal";
+import { UserAgentApplication, Account, AuthResponse, AuthError } from "msal";
 import { IdToken } from "msal/lib-commonjs/IdToken";
 
-type ButtonTheme = "dark_short" | "light_short" | "dark" | "light";
-export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
+type MicrosoftLoginButtonTheme = "dark_short" | "light_short" | "dark" | "light";
+interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Application (client) ID
    */
@@ -32,7 +32,7 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Name of theme for button style.
    */
-  buttonTheme?: ButtonTheme;
+  buttonTheme?: MicrosoftLoginButtonTheme;
 
   /**
    * Make an additional request to GraphAPI to get user data.
@@ -61,14 +61,7 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   redirectUri?: string;
 }
 
-export interface MicrosoftLoginButtonProps
-  extends React.Props<MicrosoftLoginButton> {
-  buttonTheme: ButtonTheme;
-  buttonClassName?: string;
-  onClick?: any;
-}
-
-export interface GraphAPIUserData extends AuthResponse {
+interface GraphAPIUserData extends AuthResponse {
   "@odata.context": string;
   accessToken: string;
   account: Account;
@@ -92,16 +85,16 @@ export interface GraphAPIUserData extends AuthResponse {
   uniqueId: string;
 }
 
+interface MicrosoftLoginState {
+  msalInstance?: UserAgentApplication;
+  scopes: [string];
+}
+
 declare class MicrosoftLogin extends React.Component<
   MicrosoftLoginProps,
-  any
-> {}
-declare class MicrosoftLoginButton extends React.Component<
-  MicrosoftLoginButtonProps,
-  any
+  MicrosoftLoginState
 > {}
 
-declare module "microsoft-login" {}
-declare module "microsoft-login-button" {}
+export { MicrosoftLogin, MicrosoftLoginProps, MicrosoftLoginState, MicrosoftLoginButtonTheme, GraphAPIUserData };
 
 export default MicrosoftLogin;
