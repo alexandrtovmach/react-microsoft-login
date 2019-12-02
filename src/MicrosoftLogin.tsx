@@ -4,7 +4,8 @@ import { UserAgentApplication, AuthResponse, AuthError } from "msal";
 import {
   MicrosoftLoginProps,
   MicrosoftLoginState,
-  GraphAPIUserData
+  GraphAPIUserData,
+  MicrosoftLoginPrompt
 } from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
 
@@ -25,12 +26,12 @@ interface PopupLogin {
   scopes: [string];
   withUserData: boolean;
   authCallback: any;
-  prompt: MicrosoftLoginProps["prompt"];
+  prompt?: MicrosoftLoginPrompt;
 }
 interface RedirectLogin {
   msalInstance: UserAgentApplication;
   scopes: [string];
-  prompt: MicrosoftLoginProps["prompt"];
+  prompt?: MicrosoftLoginPrompt;
 }
 
 const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
@@ -126,7 +127,7 @@ export default class MicrosoftLogin extends React.Component<
       withUserData = false,
       authCallback,
       forceRedirectStrategy = false,
-      prompt = undefined
+      prompt
     } = this.props;
 
     if (msalInstance) {
