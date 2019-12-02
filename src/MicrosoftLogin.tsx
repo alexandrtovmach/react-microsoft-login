@@ -42,7 +42,7 @@ export default class MicrosoftLogin extends React.Component<
 > {
   constructor(props: any) {
     super(props);
-    const { graphScopes, clientId, tenantUrl, redirectUri } = props;
+    const { graphScopes, clientId, tenantUrl, redirectUri, prompt } = props;
     this.state = {
       msalInstance: getUserAgentApp(clientId, tenantUrl, redirectUri),
       scopes: getScopes(graphScopes)
@@ -101,15 +101,22 @@ export default class MicrosoftLogin extends React.Component<
     const {
       withUserData = false,
       authCallback,
-      forceRedirectStrategy = false
+      forceRedirectStrategy = false,
+      prompt = undefined
     } = this.props;
 
     if (msalInstance) {
       this.log("Login STARTED");
       if (forceRedirectStrategy || this.checkToIE()) {
-        this.redirectLogin(msalInstance, scopes);
+        this.redirectLogin(msalInstance, scopes, prompt);
       } else {
-        this.popupLogin(msalInstance, scopes, withUserData, authCallback);
+        this.popupLogin(
+          msalInstance,
+          scopes,
+          prompt,
+          withUserData,
+          authCallback
+        );
       }
     } else {
       this.log("Login FAILED", "clientID broken or not provided", true);
@@ -160,12 +167,13 @@ export default class MicrosoftLogin extends React.Component<
   popupLogin(
     msalInstance: UserAgentApplication,
     scopes: [string],
+    prompt: MicrosoftLoginProps["prompt"],
     withUserData: boolean,
     authCallback: any
   ) {
     this.log("Fetch Azure AD 'token' with popup STARTED");
     msalInstance
-      .loginPopup({ scopes })
+      .loginPopup({ scopes: scopes, prompt: prompt })
       .then((authResponse: AuthResponse) => {
         this.log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
         this.log("Fetch Graph API 'access_token' in silent mode STARTED");
@@ -183,9 +191,13 @@ export default class MicrosoftLogin extends React.Component<
       });
   }
 
-  redirectLogin(msalInstance: UserAgentApplication, scopes: [string]) {
+  redirectLogin(
+    msalInstance: UserAgentApplication,
+    scopes: [string],
+    prompt: MicrosoftLoginProps["prompt"]
+  ) {
     this.log("Fetch Azure AD 'token' with redirect STARTED");
-    msalInstance.loginRedirect({ scopes });
+    msalInstance.loginRedirect({ scopes: scopes, prompt: prompt });
   }
 
   getUserData(authResponseWithAccessToken: AuthResponse) {

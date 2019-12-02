@@ -50,6 +50,11 @@ export interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   className?: string;
 
   /**
+   * Prompt behavior for interactive requests
+   * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-prompt-behavior
+   */
+  prompt?: "login" | "select_account" | "consent" | "none"  | undefined
+  /**
    * Force redirect login strategy. This strategy used by default on IE browsers to avoid issues.
    * If set true login will be executed only with redirect strategy in all browsers.
    */
