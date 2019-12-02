@@ -1,21 +1,50 @@
 import * as React from "react";
 import { UserAgentApplication, AuthResponse, AuthError } from "msal";
 
-import { MicrosoftLoginProps, GraphAPIUserData } from "../index";
+import {
+  MicrosoftLoginProps,
+  MicrosoftLoginState,
+  GraphAPIUserData
+} from "../index";
 import MicrosoftLoginButton from "./MicrosoftLoginButton";
 
+interface UserAgentApp {
+  clientId: string;
+  tenantUrl?: string;
+  redirectUri?: string;
+}
+interface GraphAPITokenAndUser {
+  msalInstance: UserAgentApplication;
+  scopes: [string];
+  withUserData: boolean;
+  authCallback: any;
+  isRedirect: boolean;
+}
+interface PopupLogin {
+  msalInstance: UserAgentApplication;
+  scopes: [string];
+  withUserData: boolean;
+  authCallback: any;
+  prompt: MicrosoftLoginProps["prompt"];
+}
+interface RedirectLogin {
+  msalInstance: UserAgentApplication;
+  scopes: [string];
+  prompt: MicrosoftLoginProps["prompt"];
+}
+
 const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
-const getUserAgentApp = (
-  clientId: string,
-  tenantUrl?: string,
-  redirectUri?: string
-) => {
+const getUserAgentApp = ({
+  clientId,
+  tenantUrl,
+  redirectUri
+}: UserAgentApp) => {
   if (clientId && CLIENT_ID_REGEX.test(clientId)) {
     return new UserAgentApplication({
       auth: {
+        ...(redirectUri && { redirectUri }),
+        ...(tenantUrl && { authority: tenantUrl }),
         clientId,
-        redirectUri,
-        authority: tenantUrl,
         validateAuthority: true,
         navigateToLoginRequestUrl: false
       }
@@ -31,20 +60,15 @@ const getScopes = (graphScopes: [string]) => {
   return scopes;
 };
 
-interface MicrosoftLoginState {
-  msalInstance?: UserAgentApplication;
-  scopes: [string];
-}
-
 export default class MicrosoftLogin extends React.Component<
   MicrosoftLoginProps,
   MicrosoftLoginState
 > {
   constructor(props: any) {
     super(props);
-    const { graphScopes, clientId, tenantUrl, redirectUri, prompt } = props;
+    const { graphScopes, clientId, tenantUrl, redirectUri } = props;
     this.state = {
-      msalInstance: getUserAgentApp(clientId, tenantUrl, redirectUri),
+      msalInstance: getUserAgentApp({ clientId, tenantUrl, redirectUri }),
       scopes: getScopes(graphScopes)
     };
   }
@@ -63,13 +87,13 @@ export default class MicrosoftLogin extends React.Component<
               authResponse
             );
             this.log("Fetch Graph API 'access_token' in silent mode STARTED");
-            this.getGraphAPITokenAndUser(
+            this.getGraphAPITokenAndUser({
               msalInstance,
               scopes,
               withUserData,
               authCallback,
-              true
-            );
+              isRedirect: true
+            });
           } else {
             this.log(
               "Fetch Azure AD 'token' with redirect FAILED",
@@ -91,7 +115,7 @@ export default class MicrosoftLogin extends React.Component<
       prevProps.redirectUri !== redirectUri
     ) {
       this.setState({
-        msalInstance: getUserAgentApp(clientId, tenantUrl, redirectUri)
+        msalInstance: getUserAgentApp({ clientId, tenantUrl, redirectUri })
       });
     }
   }
@@ -108,28 +132,28 @@ export default class MicrosoftLogin extends React.Component<
     if (msalInstance) {
       this.log("Login STARTED");
       if (forceRedirectStrategy || this.checkToIE()) {
-        this.redirectLogin(msalInstance, scopes, prompt);
+        this.redirectLogin({ msalInstance, scopes, prompt });
       } else {
-        this.popupLogin(
+        this.popupLogin({
           msalInstance,
           scopes,
-          prompt,
           withUserData,
-          authCallback
-        );
+          authCallback,
+          prompt
+        });
       }
     } else {
       this.log("Login FAILED", "clientID broken or not provided", true);
     }
   };
 
-  getGraphAPITokenAndUser(
-    msalInstance: UserAgentApplication,
-    scopes: [string],
-    withUserData: boolean,
-    authCallback: any,
-    isRedirect: boolean
-  ) {
+  getGraphAPITokenAndUser({
+    msalInstance,
+    scopes,
+    withUserData,
+    authCallback,
+    isRedirect
+  }: GraphAPITokenAndUser) {
     return msalInstance
       .acquireTokenSilent({ scopes })
       .catch((error: any) => {
@@ -164,26 +188,26 @@ export default class MicrosoftLogin extends React.Component<
       });
   }
 
-  popupLogin(
-    msalInstance: UserAgentApplication,
-    scopes: [string],
-    prompt: MicrosoftLoginProps["prompt"],
-    withUserData: boolean,
-    authCallback: any
-  ) {
+  popupLogin({
+    msalInstance,
+    scopes,
+    withUserData,
+    authCallback,
+    prompt
+  }: PopupLogin) {
     this.log("Fetch Azure AD 'token' with popup STARTED");
     msalInstance
-      .loginPopup({ scopes: scopes, prompt: prompt })
+      .loginPopup({ scopes, prompt })
       .then((authResponse: AuthResponse) => {
         this.log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
         this.log("Fetch Graph API 'access_token' in silent mode STARTED");
-        this.getGraphAPITokenAndUser(
+        this.getGraphAPITokenAndUser({
           msalInstance,
           scopes,
           withUserData,
           authCallback,
-          false
-        );
+          isRedirect: false
+        });
       })
       .catch((error: AuthError) => {
         this.log("Fetch Azure AD 'token' with popup FAILED", error, true);
@@ -191,13 +215,9 @@ export default class MicrosoftLogin extends React.Component<
       });
   }
 
-  redirectLogin(
-    msalInstance: UserAgentApplication,
-    scopes: [string],
-    prompt: MicrosoftLoginProps["prompt"]
-  ) {
+  redirectLogin({ msalInstance, scopes, prompt }: RedirectLogin) {
     this.log("Fetch Azure AD 'token' with redirect STARTED");
-    msalInstance.loginRedirect({ scopes: scopes, prompt: prompt });
+    msalInstance.loginRedirect({ scopes, prompt });
   }
 
   getUserData(authResponseWithAccessToken: AuthResponse) {
