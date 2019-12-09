@@ -11,7 +11,6 @@
     "develop": "webpack-dev-server --mode development",
     "build": "rm -rf ./dist && tsc && webpack",
     "deploy": "lint-staged && yarn build && gh-pages -d examples/dist",
-    "precommit": "lint-staged",
     "prettify": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
   "homepage": "https://alexandrtovmach.github.io/react-microsoft-login",
@@ -71,5 +70,10 @@
     "auth",
     "oauth"
   ],
-  "license": "ISC"
+  "license": "ISC",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
