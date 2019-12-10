@@ -1,4 +1,8 @@
-# react-microsoft-login [![npm version](http://img.shields.io/npm/v/react-microsoft-login.svg)](https://npmjs.org/package/react-microsoft-login) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-microsoft-login) ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/alexandrtovmach/react-microsoft-login)
+# react-microsoft-login
+
+[![npm](https://img.shields.io/npm/v/react-microsoft-login?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/react-microsoft-login)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-microsoft-login?cacheSeconds=1800)](https://www.npmjs.com/package/react-microsoft-login)
+[![npm](https://img.shields.io/npm/dt/react-microsoft-login?cacheSeconds=1800)](https://www.npmjs.com/package/react-microsoft-login)
 
 React component for a simple login with Microsoft services, based on [Official Microsoft Authentication Library for JavaScript](https://github.com/AzureAD/microsoft-authentication-library-for-js).
 
