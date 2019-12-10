@@ -56,4 +56,4 @@ React component for a simple login with Microsoft services, based on [Official M
 
 ## 📝 License
 
-[MIT](https://github.com/nishanths/license/blob/master/LICENSE)
+[MIT](https://github.com/alexandrtovmach/react-microsoft-login/blob/master/LICENSE)
