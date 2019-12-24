@@ -20,6 +20,7 @@ export default class ExaplePage extends React.Component {
 
     this.state = {
       clientId: config.client_id,
+      callbackUrl: config.callbackUrl || window.location.href,
       buttonTheme: config.themeOptions[0].value,
       graphScopes: [config.graphScopesOptions[0].value],
       withUserData: true,
@@ -52,6 +53,7 @@ export default class ExaplePage extends React.Component {
       debug,
       customButton,
       customClassName,
+      callbackUrl,
       forceRedirectStrategy
     } = this.state;
 
@@ -95,6 +97,14 @@ export default class ExaplePage extends React.Component {
                     }
                     placeholder="f8c7976f-3e93-482d-88a3-62a1133cbbc3"
                     value={clientId}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <label>Redirect URI</label>
+                  <input
+                    onChange={e => this.handleChange(e.target.value, "callbackUrl")}
+                    placeholder='https://example.com'
+                    value={callbackUrl}
                   />
                 </Form.Field>
                 <Form.Field>
