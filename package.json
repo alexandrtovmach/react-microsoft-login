@@ -9,9 +9,8 @@
   "scripts": {
     "watch": "tsc --watch",
     "develop": "webpack-dev-server --mode development",
-    "prepublishOnly": "rm -rf ./dist && tsc",
     "build": "rm -rf ./dist && tsc && webpack",
-    "deploy": "lint-staged && yarn build && gh-pages -d examples/dist",
+    "deploy": "gh-pages -d examples/dist",
     "prettify": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
   "homepage": "https://alexandrtovmach.github.io/react-microsoft-login",
