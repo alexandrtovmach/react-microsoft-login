@@ -10,12 +10,12 @@ interface MicrosoftLoginButtonProps {
 const MicrosoftLoginButton: React.SFC<MicrosoftLoginButtonProps> = ({
   buttonTheme,
   buttonClassName,
-  onClick
+  onClick,
 }) => {
   const [bg, short] = buttonTheme.split("_"),
     isDark = bg === "dark",
     styleObj = {
-      cursor: "pointer"
+      cursor: "pointer",
     };
 
   if (short) {
