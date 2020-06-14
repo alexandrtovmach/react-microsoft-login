@@ -16,6 +16,8 @@ React component for a simple login with Microsoft services, based on [Official M
 
 1. Install package:
    ```sh
+   npm i react-microsoft-login
+   # or
    yarn add react-microsoft-login
    ```
 2. Import and configure component:
@@ -24,7 +26,7 @@ React component for a simple login with Microsoft services, based on [Official M
    import React from "react";
    import MicrosoftLogin from "react-microsoft-login";
 
-   export default props => {
+   export default (props) => {
      const authHandler = (err, data) => {
        console.log(err, data);
      };
