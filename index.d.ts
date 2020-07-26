@@ -18,7 +18,7 @@ interface MicrosoftLoginProps extends React.Props<MicrosoftLogin> {
   /**
    * Array of Graph API permission names.
    */
-  graphScopes?: [string];
+  graphScopes?: string[];
 
   /**
    * A URL indicating a directory that MSAL can request tokens from.
@@ -94,7 +94,7 @@ interface GraphAPIUserData extends AuthResponse {
 
 interface MicrosoftLoginState {
   msalInstance?: UserAgentApplication;
-  scopes: [string];
+  scopes: string[];
 }
 
 declare class MicrosoftLogin extends React.Component<

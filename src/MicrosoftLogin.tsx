@@ -16,21 +16,21 @@ interface UserAgentApp {
 }
 interface GraphAPITokenAndUser {
   msalInstance: UserAgentApplication;
-  scopes: [string];
+  scopes: string[];
   withUserData: boolean;
   authCallback: any;
   isRedirect: boolean;
 }
 interface PopupLogin {
   msalInstance: UserAgentApplication;
-  scopes: [string];
+  scopes: string[];
   withUserData: boolean;
   authCallback: any;
   prompt?: MicrosoftLoginPrompt;
 }
 interface RedirectLogin {
   msalInstance: UserAgentApplication;
-  scopes: [string];
+  scopes: string[];
   prompt?: MicrosoftLoginPrompt;
 }
 
@@ -53,7 +53,7 @@ const getUserAgentApp = ({
   }
 };
 
-const getScopes = (graphScopes: [string]) => {
+const getScopes = (graphScopes: string[]) => {
   const scopes = graphScopes || [];
   if (!scopes.find((el: string) => el.toLowerCase() === "user.read")) {
     scopes.push("user.read");
