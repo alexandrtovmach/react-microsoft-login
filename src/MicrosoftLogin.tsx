@@ -221,7 +221,7 @@ export default class MicrosoftLogin extends React.Component<
           msalInstance.acquireTokenRedirect({ scopes });
         } else {
           this.log("Fetch Graph API 'access_token' with popup STARTED");
-          msalInstance.acquireTokenPopup({ scopes });
+          return msalInstance.acquireTokenPopup({ scopes });
         }
       })
       .then((authResponseWithAccessToken: AuthResponse) => {
