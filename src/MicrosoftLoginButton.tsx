@@ -1,13 +1,18 @@
-import * as React from "react";
+import React from "react";
 
-import { MicrosoftLoginButtonTheme } from "../index";
+export type MicrosoftLoginButtonTheme =
+  | "dark_short"
+  | "light_short"
+  | "dark"
+  | "light";
 
 interface MicrosoftLoginButtonProps {
   buttonTheme: MicrosoftLoginButtonTheme;
   buttonClassName?: string;
   onClick?: any;
 }
-const MicrosoftLoginButton: React.SFC<MicrosoftLoginButtonProps> = ({
+
+const MicrosoftLoginButton: React.FunctionComponent<MicrosoftLoginButtonProps> = ({
   buttonTheme,
   buttonClassName,
   onClick,
