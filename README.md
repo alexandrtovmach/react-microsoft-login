@@ -44,7 +44,7 @@ React component for a simple login with Microsoft services, based on [Official M
 | Parameter             | Type                                               | Default                | Description                                                                                                                                                                                                           |
 | --------------------- | -------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | clientId              | string                                             | required               | Application (client) ID                                                                                                                                                                                               |
-| authCallback          | function                                           | required               | Callback function which takes two arguments `(error, authData)`                                                                                                                                                       |
+| authCallback          | function                                           | required               | Callback function which takes three arguments `(error, authData, msalInstance)`                                                                                                                                       |
 | graphScopes           | array                                              | `["user.read"]`        | Array of Graph API permission names. [More about Graph API permissions](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference).                                                             |
 | redirectUri           | string                                             | `window.location.href` | The redirect URI of the application, this should be same as the value in the application registration portal.                                                                                                         |
 | tenantUrl             | string                                             |                        | A URL indicating a directory that MSAL can request tokens from. [More about MSAL tenant auth](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/MSAL-basics).                                   |
@@ -55,6 +55,39 @@ React component for a simple login with Microsoft services, based on [Official M
 | debug                 | boolean                                            |                        | Boolean flag to enable detailed logs of authorization process.                                                                                                                                                        |
 | className             | string                                             |                        | Additional class name string.                                                                                                                                                                                         |
 | children              | ReactComponent                                     |                        | Alternative way to provide custom button element as a children prop instead of [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps) |
+
+### Sign out
+
+Since version 1.12.0 and higher msalInstance returned as third argument in callback function, after success auth. With this instance you can do many things and logout is one of them:
+
+```jsx
+import React, { useState } from "react";
+import MicrosoftLogin from "../../dist";
+
+const ExaplePage = () => {
+  const [msalInstance, onMsalInstanceChange] = useState();
+
+  const loginHandler = (err, data, msal) => {
+    console.log(err, data);
+    // some actions
+    if (!err && data) {
+      onMsalInstanceChange(msal);
+    }
+  };
+
+  const logoutHandler = () => {
+    msalInstance.logout();
+  };
+
+  return msalInstance ? (
+    <button onClick={logoutHandler}>Logout</button>
+  ) : (
+    <MicrosoftLogin clientId={clientId} authCallback={loginHandler} />
+  );
+};
+
+export default ExaplePage;
+```
 
 ## 📝 License
 
