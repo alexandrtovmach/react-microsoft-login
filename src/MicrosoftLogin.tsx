@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { AuthResponse, AuthError } from "msal";
+import { AuthResponse, AuthError, UserAgentApplication } from "msal";
 import { User } from "@microsoft/microsoft-graph-types";
 
 import MicrosoftLoginButton, {
@@ -19,7 +19,8 @@ interface MicrosoftLoginProps {
    */
   authCallback: (
     error: AuthError | null,
-    result?: AuthResponse | (AuthResponse & User)
+    result?: AuthResponse | (AuthResponse & User),
+    instance?: UserAgentApplication
   ) => void;
 
   /**
@@ -131,7 +132,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       getUserData(authResponseWithAccessToken);
     } else {
       log("Login SUCCEDED");
-      authCallback(null, authResponseWithAccessToken);
+      authCallback(null, authResponseWithAccessToken, msalInstance);
     }
   };
 
@@ -195,10 +196,14 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
     const userData = await response.json();
     log("Fetch Graph API user data SUCCEDEED", userData);
     log("Login SUCCEDED");
-    authCallback(null, {
-      ...userData,
-      ...authResponseWithAccessToken,
-    });
+    authCallback(
+      null,
+      {
+        ...userData,
+        ...authResponseWithAccessToken,
+      },
+      msalInstance
+    );
   };
 
   return children ? (
