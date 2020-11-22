@@ -6,7 +6,7 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "removeComments": true,
+    "removeComments": false,
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react",

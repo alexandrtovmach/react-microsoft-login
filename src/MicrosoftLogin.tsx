@@ -1,13 +1,13 @@
-import React from "react";
-import { UserAgentApplication, AuthResponse, AuthError } from "msal";
+import React, { useEffect } from "react";
+import { AuthResponse, AuthError } from "msal";
 import { User } from "@microsoft/microsoft-graph-types";
 
 import MicrosoftLoginButton, {
   MicrosoftLoginButtonTheme,
 } from "./MicrosoftLoginButton";
+import { checkToIE, getLogger, getScopes, getUserAgentApp } from "./helpers";
 
 type MicrosoftLoginPrompt = "login" | "select_account" | "consent" | "none";
-type GraphAPIUserData = AuthResponse & User;
 interface MicrosoftLoginProps {
   /**
    * Application (client) ID
@@ -17,7 +17,10 @@ interface MicrosoftLoginProps {
   /**
    * Callback function which takes two arguments (error, authData)
    */
-  authCallback: (error?: AuthError, result?: AuthResponse) => void;
+  authCallback: (
+    error: AuthError | null,
+    result?: AuthResponse | (AuthResponse & User)
+  ) => void;
 
   /**
    * Array of Graph API permission names.
@@ -72,277 +75,141 @@ interface MicrosoftLoginProps {
   redirectUri?: string;
 }
 
-interface MicrosoftLoginState {
-  msalInstance?: UserAgentApplication;
-  scopes: string[];
-}
-
-const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
-const getUserAgentApp = ({
+const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
+  graphScopes,
   clientId,
   tenantUrl,
   redirectUri,
-}: {
-  clientId: string;
-  tenantUrl?: string;
-  redirectUri?: string;
+  children,
+  buttonTheme,
+  className,
+  withUserData = false,
+  authCallback,
+  forceRedirectStrategy = false,
+  prompt,
+  debug,
 }) => {
-  if (clientId && CLIENT_ID_REGEX.test(clientId)) {
-    return new UserAgentApplication({
-      auth: {
-        ...(redirectUri && { redirectUri }),
-        ...(tenantUrl && { authority: tenantUrl }),
-        clientId,
-        validateAuthority: true,
-        navigateToLoginRequestUrl: false,
-      },
-    });
-  }
-};
+  const msalInstance = getUserAgentApp({ clientId, tenantUrl, redirectUri });
+  const scopes = getScopes(graphScopes);
+  const log = getLogger(debug);
 
-const getScopes = (graphScopes: string[]) => {
-  const scopes = graphScopes || [];
-  if (!scopes.find((el: string) => el.toLowerCase() === "user.read")) {
-    scopes.push("user.read");
-  }
-  return scopes;
-};
-
-export default class MicrosoftLogin extends React.Component<
-  MicrosoftLoginProps,
-  MicrosoftLoginState
-> {
-  constructor(props: any) {
-    super(props);
-    const { graphScopes, clientId, tenantUrl, redirectUri } = props;
-    this.state = {
-      msalInstance: getUserAgentApp({ clientId, tenantUrl, redirectUri }),
-      scopes: getScopes(graphScopes),
-    };
+  if (!msalInstance) {
+    log("Initialization", "clientID broken or not provided", true);
+    return null;
   }
 
-  componentDidMount() {
-    const { msalInstance, scopes } = this.state;
-    const { authCallback, withUserData = false } = this.props;
-    if (!msalInstance) {
-      this.log("Initialization", "clientID broken or not provided", true);
-    } else {
-      msalInstance.handleRedirectCallback(
-        (error: AuthError, authResponse: AuthResponse) => {
-          if (!error && authResponse) {
-            this.log(
-              "Fetch Azure AD 'token' with redirect SUCCEDEED",
-              authResponse
-            );
-            this.log("Fetch Graph API 'access_token' in silent mode STARTED");
-            this.getGraphAPITokenAndUser({
-              msalInstance,
-              scopes,
-              withUserData,
-              authCallback,
-              isRedirect: true,
-            });
-          } else {
-            this.log(
-              "Fetch Azure AD 'token' with redirect FAILED",
-              error,
-              true
-            );
-            authCallback(error);
-          }
+  useEffect(() => {
+    msalInstance.handleRedirectCallback(
+      (error: AuthError, authResponse: AuthResponse) => {
+        if (!error && authResponse) {
+          log("Fetch Azure AD 'token' with redirect SUCCEDEED", authResponse);
+          log("Fetch Graph API 'access_token' in silent mode STARTED");
+          getGraphAPITokenAndUser(true);
+        } else {
+          log("Fetch Azure AD 'token' with redirect FAILED", error, true);
+          authCallback(error);
         }
-      );
-    }
-  }
-
-  componentDidUpdate(prevProps: any) {
-    const { clientId, tenantUrl, redirectUri } = this.props;
-    if (
-      prevProps.clientId !== clientId ||
-      prevProps.tenantUrl !== tenantUrl ||
-      prevProps.redirectUri !== redirectUri
-    ) {
-      this.setState({
-        msalInstance: getUserAgentApp({ clientId, tenantUrl, redirectUri }),
-      });
-    }
-  }
-
-  login = () => {
-    const { msalInstance, scopes } = this.state;
-    const {
-      withUserData = false,
-      authCallback,
-      forceRedirectStrategy = false,
-      prompt,
-    } = this.props;
-
-    if (msalInstance) {
-      this.log("Login STARTED");
-      if (forceRedirectStrategy || this.checkToIE()) {
-        this.redirectLogin({ msalInstance, scopes, prompt });
-      } else {
-        this.popupLogin({
-          msalInstance,
-          scopes,
-          withUserData,
-          authCallback,
-          prompt,
-        });
       }
+    );
+  }, []);
+
+  const login = () => {
+    log("Login STARTED");
+    if (forceRedirectStrategy || checkToIE()) {
+      redirectLogin();
     } else {
-      this.log("Login FAILED", "clientID broken or not provided", true);
+      popupLogin();
     }
   };
 
-  getGraphAPITokenAndUser({
-    msalInstance,
-    scopes,
-    withUserData,
-    authCallback,
-    isRedirect,
-  }: {
-    msalInstance: UserAgentApplication;
-    scopes: string[];
-    withUserData: boolean;
-    authCallback: any;
-    isRedirect: boolean;
-  }) {
-    return msalInstance
-      .acquireTokenSilent({ scopes })
-      .catch((error: any) => {
-        this.log(
+  const finalStep = (authResponseWithAccessToken: AuthResponse) => {
+    log(
+      "Fetch Graph API 'access_token' SUCCEDEED",
+      authResponseWithAccessToken
+    );
+    if (withUserData) {
+      getUserData(authResponseWithAccessToken);
+    } else {
+      log("Login SUCCEDED");
+      authCallback(null, authResponseWithAccessToken);
+    }
+  };
+
+  const getGraphAPITokenAndUser = async (isRedirect?: boolean) => {
+    try {
+      try {
+        const silentRes = await msalInstance.acquireTokenSilent({ scopes });
+        finalStep(silentRes);
+      } catch (err) {
+        log(
           "Fetch Graph API 'access_token' in silent mode is FAILED",
-          error,
+          err,
           true
         );
         if (isRedirect) {
-          this.log("Fetch Graph API 'access_token' with redirect STARTED");
+          log("Fetch Graph API 'access_token' with redirect STARTED");
           msalInstance.acquireTokenRedirect({ scopes });
         } else {
-          this.log("Fetch Graph API 'access_token' with popup STARTED");
-          return msalInstance.acquireTokenPopup({ scopes });
+          log("Fetch Graph API 'access_token' with popup STARTED");
+          const popupRes = await msalInstance.acquireTokenPopup({ scopes });
+          finalStep(popupRes);
         }
-      })
-      .then((authResponseWithAccessToken: AuthResponse) => {
-        this.log(
-          "Fetch Graph API 'access_token' SUCCEDEED",
-          authResponseWithAccessToken
-        );
-        if (withUserData) {
-          this.getUserData(authResponseWithAccessToken);
-        } else {
-          this.log("Login SUCCEDED");
-          authCallback(null, { authResponseWithAccessToken });
-        }
-      })
-      .catch((error: AuthError) => {
-        this.log("Login FAILED", error, true);
-        authCallback(error);
-      });
-  }
+      }
+    } catch (error) {
+      log("Login FAILED", error, true);
+      authCallback(error);
+    }
+  };
 
-  popupLogin({
-    msalInstance,
-    scopes,
-    withUserData,
-    authCallback,
-    prompt,
-  }: {
-    msalInstance: UserAgentApplication;
-    scopes: string[];
-    withUserData: boolean;
-    authCallback: any;
-    prompt?: MicrosoftLoginPrompt;
-  }) {
-    this.log("Fetch Azure AD 'token' with popup STARTED");
-    msalInstance
-      .loginPopup({ scopes, prompt })
-      .then((authResponse: AuthResponse) => {
-        this.log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
-        this.log("Fetch Graph API 'access_token' in silent mode STARTED");
-        this.getGraphAPITokenAndUser({
-          msalInstance,
-          scopes,
-          withUserData,
-          authCallback,
-          isRedirect: false,
-        });
-      })
-      .catch((error: AuthError) => {
-        this.log("Fetch Azure AD 'token' with popup FAILED", error, true);
-        authCallback(error);
-      });
-  }
+  const popupLogin = async () => {
+    log("Fetch Azure AD 'token' with popup STARTED");
+    try {
+      const authResponse = await msalInstance.loginPopup({ scopes, prompt });
+      log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
+      log("Fetch Graph API 'access_token' in silent mode STARTED");
+      getGraphAPITokenAndUser();
+    } catch (err) {
+      log("Fetch Azure AD 'token' with popup FAILED", err, true);
+      authCallback(err);
+    }
+  };
 
-  redirectLogin({
-    msalInstance,
-    scopes,
-    prompt,
-  }: {
-    msalInstance: UserAgentApplication;
-    scopes: string[];
-    prompt?: MicrosoftLoginPrompt;
-  }) {
-    this.log("Fetch Azure AD 'token' with redirect STARTED");
+  const redirectLogin = () => {
+    log("Fetch Azure AD 'token' with redirect STARTED");
     msalInstance.loginRedirect({ scopes, prompt });
-  }
+  };
 
-  getUserData(authResponseWithAccessToken: AuthResponse) {
-    const { authCallback } = this.props;
+  const getUserData = async (authResponseWithAccessToken: AuthResponse) => {
     const { accessToken } = authResponseWithAccessToken;
-    this.log("Fetch Graph API user data STARTED");
+    log("Fetch Graph API user data STARTED");
     const options = {
       method: "GET",
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
-    return fetch("https://graph.microsoft.com/v1.0/me", options)
-      .then((response: Response) => response.json())
-      .then((userData: GraphAPIUserData) => {
-        this.log("Fetch Graph API user data SUCCEDEED", userData);
-        this.log("Login SUCCEDED");
-        authCallback(undefined, {
-          ...userData,
-          ...authResponseWithAccessToken,
-        });
-      });
-  }
-
-  checkToIE(): boolean {
-    const ua = window.navigator.userAgent;
-    const msie = ua.indexOf("MSIE ");
-    const msie11 = ua.indexOf("Trident/");
-    const msedge = ua.indexOf("Edge/");
-    const isIE = msie > 0 || msie11 > 0;
-    const isEdge = msedge > 0;
-    return isIE || isEdge;
-  }
-
-  log(name: string, content?: any, isError?: boolean) {
-    const { debug } = this.props;
-    if (debug) {
-      const style = `background-color: ${
-        isError ? "#990000" : "#009900"
-      }; color: #ffffff; font-weight: 700; padding: 2px`;
-      console.groupCollapsed("MSLogin debug");
-      console.log(`%c${name}`, style);
-      content && console.log(content.message || content);
-      console.groupEnd();
-    }
-  }
-
-  render() {
-    const { buttonTheme, className, children } = this.props;
-    return children ? (
-      <div onClick={this.login}>{children}</div>
-    ) : (
-      <MicrosoftLoginButton
-        buttonTheme={buttonTheme || "light"}
-        buttonClassName={className}
-        onClick={this.login}
-      />
+    const response = await fetch(
+      "https://graph.microsoft.com/v1.0/me",
+      options
     );
-  }
-}
+    const userData = await response.json();
+    log("Fetch Graph API user data SUCCEDEED", userData);
+    log("Login SUCCEDED");
+    authCallback(null, {
+      ...userData,
+      ...authResponseWithAccessToken,
+    });
+  };
+
+  return children ? (
+    <div onClick={login}>{children}</div>
+  ) : (
+    <MicrosoftLoginButton
+      buttonTheme={buttonTheme || "light"}
+      buttonClassName={className}
+      onClick={login}
+    />
+  );
+};
+
+export default MicrosoftLogin;
