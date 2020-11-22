@@ -10,6 +10,7 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react",
+    "moduleResolution": "node",
     "lib": ["dom", "es7"]
   },
   "include": ["src"],
