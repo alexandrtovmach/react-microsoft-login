@@ -1,4 +1,4 @@
-import React, { createRef, useRef, useState } from "react";
+import React, { createRef, useRef, useState, useEffect } from "react";
 import {
   Container,
   Header,
@@ -14,7 +14,7 @@ import {
 import config from "./config";
 import MicrosoftLogin from "../../dist";
 
-const ExaplePage = () => {
+const ExamplePage = () => {
   const [msalInstance, onMsalInstanceChange] = useState();
   const [clientId, onClientIdChange] = useState(config.client_id);
   const [callbackUrl, onCallbackUrlChange] = useState(
@@ -193,6 +193,7 @@ const ExaplePage = () => {
                 className={customClassName}
                 graphScopes={graphScopes}
                 children={customButton && <Button>Custom button</Button>}
+                useLocalStorageCache={true}
               />
             )}
           </Segment>
@@ -202,4 +203,4 @@ const ExaplePage = () => {
   );
 };
 
-export default ExaplePage;
+export default ExamplePage;

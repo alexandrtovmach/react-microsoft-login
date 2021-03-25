@@ -39,6 +39,12 @@ interface MicrosoftLoginProps {
   tenantUrl?: string;
 
   /**
+   * You can configure the URI to which it should redirect after sign-out by setting postLogoutRedirectUri.
+   * This URI should also be registered as the logout URI in your application registration.
+   */
+  postLogoutRedirectUri?: string;
+
+  /**
    * Name of theme for button style.
    */
   buttonTheme?: MicrosoftLoginButtonTheme;
@@ -74,6 +80,12 @@ interface MicrosoftLoginProps {
    * The redirect URI of the application, this should be same as the value in the application registration portal.
    */
   redirectUri?: string;
+
+  /**
+   * Set whether to use localStorage or sessionStorage for MSAL Single Sign-On
+   * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso
+   */
+  useLocalStorageCache?: boolean;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
@@ -81,6 +93,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   clientId,
   tenantUrl,
   redirectUri,
+  postLogoutRedirectUri,
   children,
   buttonTheme,
   className,
@@ -89,8 +102,15 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   forceRedirectStrategy = false,
   prompt,
   debug,
+  useLocalStorageCache,
 }) => {
-  const msalInstance = getUserAgentApp({ clientId, tenantUrl, redirectUri });
+  const msalInstance = getUserAgentApp({
+    clientId,
+    tenantUrl,
+    redirectUri,
+    postLogoutRedirectUri,
+    useLocalStorageCache,
+  });
   const scopes = getScopes(graphScopes);
   const log = getLogger(debug);
 
@@ -103,7 +123,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
     msalInstance.handleRedirectCallback(
       (error: AuthError, authResponse: AuthResponse) => {
         if (!error && authResponse) {
-          log("Fetch Azure AD 'token' with redirect SUCCEDEED", authResponse);
+          log("Fetch Azure AD 'token' with redirect SUCCEEDED", authResponse);
           log("Fetch Graph API 'access_token' in silent mode STARTED");
           getGraphAPITokenAndUser(true);
         } else {
@@ -113,6 +133,16 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       }
     );
   }, []);
+
+  // attempt silent login
+  // return msalInstance to user login handler on reload if token is present
+  useEffect(() => {
+    const clientToken = useLocalStorageCache
+      ? localStorage.getItem("msal.idtoken")
+      : sessionStorage.getItem("msal.idtoken");
+
+    clientToken && getGraphAPITokenAndUser(true);
+  }, [msalInstance]);
 
   const login = () => {
     log("Login STARTED");
@@ -125,13 +155,13 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
 
   const finalStep = (authResponseWithAccessToken: AuthResponse) => {
     log(
-      "Fetch Graph API 'access_token' SUCCEDEED",
+      "Fetch Graph API 'access_token' SUCCEEDED",
       authResponseWithAccessToken
     );
     if (withUserData) {
       getUserData(authResponseWithAccessToken);
     } else {
-      log("Login SUCCEDED");
+      log("Login SUCCEEDED");
       authCallback(null, authResponseWithAccessToken, msalInstance);
     }
   };
@@ -166,7 +196,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
     log("Fetch Azure AD 'token' with popup STARTED");
     try {
       const authResponse = await msalInstance.loginPopup({ scopes, prompt });
-      log("Fetch Azure AD 'token' with popup SUCCEDEED", authResponse);
+      log("Fetch Azure AD 'token' with popup SUCCEEDED", authResponse);
       log("Fetch Graph API 'access_token' in silent mode STARTED");
       getGraphAPITokenAndUser();
     } catch (err) {
@@ -194,8 +224,8 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       options
     );
     const userData = await response.json();
-    log("Fetch Graph API user data SUCCEDEED", userData);
-    log("Login SUCCEDED");
+    log("Fetch Graph API user data SUCCEEDED", userData);
+    log("Login SUCCEEDED");
     authCallback(
       null,
       {

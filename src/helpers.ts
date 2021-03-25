@@ -6,19 +6,30 @@ export const getUserAgentApp = ({
   clientId,
   tenantUrl,
   redirectUri,
+  postLogoutRedirectUri,
+  useLocalStorageCache,
 }: {
   clientId: string;
   tenantUrl?: string;
   redirectUri?: string;
+  postLogoutRedirectUri?: string;
+  useLocalStorageCache?: boolean;
 }) => {
   if (clientId && CLIENT_ID_REGEX.test(clientId)) {
     return new UserAgentApplication({
       auth: {
         ...(redirectUri && { redirectUri }),
         ...(tenantUrl && { authority: tenantUrl }),
+        ...(postLogoutRedirectUri && { postLogoutRedirectUri }),
+
         clientId,
         validateAuthority: true,
         navigateToLoginRequestUrl: false,
+      },
+      cache: {
+        ...(useLocalStorageCache
+          ? { cacheLocation: "localStorage" }
+          : { cacheLocation: "sessionStorage" }),
       },
     });
   }
