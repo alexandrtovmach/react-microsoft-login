@@ -41,20 +41,22 @@ React component for a simple login with Microsoft services, based on [Official M
 
 ## 📖 API
 
-| Parameter             | Type                                               | Default                | Description                                                                                                                                                                                                           |
-| --------------------- | -------------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| clientId              | string                                             | required               | Application (client) ID                                                                                                                                                                                               |
-| authCallback          | function                                           | required               | Callback function which takes three arguments `(error, authData, msalInstance)`                                                                                                                                       |
-| graphScopes           | array                                              | `["user.read"]`        | Array of Graph API permission names. [More about Graph API permissions](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference).                                                             |
-| redirectUri           | string                                             | `window.location.href` | The redirect URI of the application, this should be same as the value in the application registration portal.                                                                                                         |
-| tenantUrl             | string                                             |                        | A URL indicating a directory that MSAL can request tokens from. [More about MSAL tenant auth](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/MSAL-basics).                                   |
-| prompt                | enum("login", "select_account", "consent", "none") |                        | Specify custom [prompt behavior](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-prompt-behavior)                                                                                             |
-| buttonTheme           | enum("dark_short", "light_short", "dark", "light") | `"light"`              | Theme for button style that based on [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps).                                          |
-| withUserData          | boolean                                            |                        | Boolean flag to make an additional request to GraphAPI to get user data.                                                                                                                                              |
-| forceRedirectStrategy | boolean                                            |                        | Boolean flag to force redirect login strategy for all browsers. This strategy used by default just for IE browsers to avoid issues.                                                                                   |
-| debug                 | boolean                                            |                        | Boolean flag to enable detailed logs of authorization process.                                                                                                                                                        |
-| className             | string                                             |                        | Additional class name string.                                                                                                                                                                                         |
-| children              | ReactComponent                                     |                        | Alternative way to provide custom button element as a children prop instead of [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps) |
+| Parameter             | Type                                               | Default                | Description                                                                                                                                                                                                                               |
+| --------------------- | -------------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| clientId              | string                                             | required               | Application (client) ID                                                                                                                                                                                                                   |
+| authCallback          | function                                           | required               | Callback function which takes three arguments `(error, authData, msalInstance)`                                                                                                                                                           |
+| graphScopes           | array                                              | `["user.read"]`        | Array of Graph API permission names. [More about Graph API permissions](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference).                                                                                 |
+| redirectUri           | string                                             | `window.location.href` | The redirect URI of the application, this should be same as the value in the application registration portal.                                                                                                                             |
+| postLogoutRedirectUri | string                                             |                        | You can configure the URI to which it should redirect after sign-out by setting postLogoutRedirectUri. This URI should also be registered as the logout URI in your application registration.                                             |
+| tenantUrl             | string                                             |                        | A URL indicating a directory that MSAL can request tokens from. [More about MSAL tenant auth](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/MSAL-basics).                                                       |
+| prompt                | enum("login", "select_account", "consent", "none") |                        | Specify custom [prompt behavior](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-prompt-behavior)                                                                                                                 |
+| buttonTheme           | enum("dark_short", "light_short", "dark", "light") | `"light"`              | Theme for button style that based on [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps).                                                              |
+| withUserData          | boolean                                            |                        | Boolean flag to make an additional request to GraphAPI to get user data.                                                                                                                                                                  |
+| forceRedirectStrategy | boolean                                            |                        | Boolean flag to force redirect login strategy for all browsers. This strategy used by default just for IE browsers to avoid issues.                                                                                                       |
+| useLocalStorageCache  | boolean                                            |                        | You can set cookie storage to `localStorage` for persistent login between tabs and sessions. Session storage is used by default. [More about SSO with MSAL](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso). |
+| debug                 | boolean                                            |                        | Boolean flag to enable detailed logs of authorization process.                                                                                                                                                                            |
+| className             | string                                             |                        | Additional class name string.                                                                                                                                                                                                             |
+| children              | ReactComponent                                     |                        | Alternative way to provide custom button element as a children prop instead of [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps)                     |
 
 ### Sign out
 
@@ -64,7 +66,7 @@ Since version 1.12.0 and higher msalInstance returned as third argument in callb
 import React, { useState } from "react";
 import MicrosoftLogin from "../../dist";
 
-const ExaplePage = () => {
+const ExamplePage = () => {
   const [msalInstance, onMsalInstanceChange] = useState();
 
   const loginHandler = (err, data, msal) => {
@@ -86,7 +88,7 @@ const ExaplePage = () => {
   );
 };
 
-export default ExaplePage;
+export default ExamplePage;
 ```
 
 ## 📝 License
