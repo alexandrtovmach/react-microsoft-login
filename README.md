@@ -64,7 +64,7 @@ Since version 1.12.0 and higher msalInstance returned as third argument in callb
 import React, { useState } from "react";
 import MicrosoftLogin from "../../dist";
 
-const ExaplePage = () => {
+const ExamplePage = () => {
   const [msalInstance, onMsalInstanceChange] = useState();
 
   const loginHandler = (err, data, msal) => {
@@ -86,7 +86,7 @@ const ExaplePage = () => {
   );
 };
 
-export default ExaplePage;
+export default ExamplePage;
 ```
 
 ## 📝 License
