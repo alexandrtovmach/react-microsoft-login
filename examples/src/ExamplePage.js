@@ -193,6 +193,7 @@ const ExamplePage = () => {
                 className={customClassName}
                 graphScopes={graphScopes}
                 children={customButton && <Button>Custom button</Button>}
+                useLocalStorageCache={true}
               />
             )}
           </Segment>
