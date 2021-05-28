@@ -141,7 +141,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       ? localStorage.getItem("msal.idtoken")
       : sessionStorage.getItem("msal.idtoken");
 
-    clientToken && getGraphAPITokenAndUser(true);
+    clientToken && getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
   }, [msalInstance]);
 
   const login = () => {
