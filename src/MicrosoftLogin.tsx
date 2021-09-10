@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { useEffect, ReactElement, ReactNode } from "react";
 import { AuthResponse, AuthError, UserAgentApplication } from "msal";
 import { User } from "@microsoft/microsoft-graph-types";
 
@@ -13,7 +13,6 @@ interface MicrosoftLoginProps {
    * Application (client) ID
    */
   clientId: string;
-  children: (login: () => void) => ReactElement;
 
   /**
    * Callback function which takes two arguments (error, authData)
@@ -87,6 +86,11 @@ interface MicrosoftLoginProps {
    * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso
    */
   useLocalStorageCache?: boolean;
+
+  /**
+   * Children can be a component to be rendered or a function to control the login function.
+   */
+  children: ((login: () => void) => ReactElement) | ReactElement;
 }
 
 const MicrosoftLogin = ({
@@ -239,7 +243,11 @@ const MicrosoftLogin = ({
   };
 
   return children ? (
-    children(login)
+    typeof children === "function" ? (
+      children(login)
+    ) : (
+      <div onClick={login}>{children}</div>
+    )
   ) : (
     <MicrosoftLoginButton
       buttonTheme={buttonTheme || "light"}
