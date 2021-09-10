@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { AuthResponse, AuthError, UserAgentApplication } from "msal";
 import { User } from "@microsoft/microsoft-graph-types";
 
@@ -13,6 +13,7 @@ interface MicrosoftLoginProps {
    * Application (client) ID
    */
   clientId: string;
+  children: (login: () => void) => ReactElement;
 
   /**
    * Callback function which takes two arguments (error, authData)
@@ -88,7 +89,7 @@ interface MicrosoftLoginProps {
   useLocalStorageCache?: boolean;
 }
 
-const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
+const MicrosoftLogin = ({
   graphScopes,
   clientId,
   tenantUrl,
@@ -103,7 +104,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   prompt,
   debug,
   useLocalStorageCache,
-}) => {
+}: MicrosoftLoginProps) => {
   const msalInstance = getUserAgentApp({
     clientId,
     tenantUrl,
@@ -141,7 +142,8 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       ? localStorage.getItem("msal.idtoken")
       : sessionStorage.getItem("msal.idtoken");
 
-    clientToken && getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
+    clientToken &&
+      getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
   }, [msalInstance]);
 
   const login = () => {
@@ -237,7 +239,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   };
 
   return children ? (
-    <div onClick={login}>{children}</div>
+    children(login)
   ) : (
     <MicrosoftLoginButton
       buttonTheme={buttonTheme || "light"}
