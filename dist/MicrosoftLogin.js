@@ -222,7 +222,7 @@ var MicrosoftLogin = function (_a) {
             }
         });
     }); };
-    return children ? (children(login)) : (react_1.default.createElement(MicrosoftLoginButton_1.default, { buttonTheme: buttonTheme || "light", buttonClassName: className, onClick: login }));
+    return children ? (typeof children === "function" ? (children(login)) : (react_1.default.createElement("div", { onClick: login }, children))) : (react_1.default.createElement(MicrosoftLoginButton_1.default, { buttonTheme: buttonTheme || "light", buttonClassName: className, onClick: login }));
 };
 exports.default = MicrosoftLogin;
 //# sourceMappingURL=MicrosoftLogin.js.map
