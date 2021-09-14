@@ -1,4 +1,4 @@
-import React, { useEffect, ReactElement, ReactNode } from "react";
+import React, { useEffect, ReactElement } from "react";
 import { AuthResponse, AuthError, UserAgentApplication } from "msal";
 import { User } from "@microsoft/microsoft-graph-types";
 
