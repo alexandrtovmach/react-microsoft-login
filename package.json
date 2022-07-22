@@ -1,11 +1,11 @@
 {
-  "name": "react-microsoft-login",
+  "name": "@zipteams/react-microsoft-login",
   "description": "React component for easy OAuth with Microsoft services on client side.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "version": "1.15.0",
-  "author": "alexandrtovmach@gmail.com",
-  "bugs": "https://github.com/alexandrtovmach/react-microsoft-login/issues",
+  "author": "Zipteams",
+  "bugs": "https://github.com/zipteams/react-microsoft-login/issues",
   "private": false,
   "scripts": {
     "watch": "tsc --watch",
@@ -15,10 +15,10 @@
     "prepare": "is-ci || husky install",
     "prettify": "prettier --write './src/**/*.{js,jsx,ts,tsx,json,css,md}'"
   },
-  "homepage": "https://alexandrtovmach.github.io/react-microsoft-login",
+  "homepage": "https://github.com/zipteams/react-microsoft-login#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexandrtovmach/react-microsoft-login.git"
+    "url": "https://github.com/zipteams/react-microsoft-login.git"
   },
   "dependencies": {
     "msal": "^1.3.2"
