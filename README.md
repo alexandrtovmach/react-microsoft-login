@@ -57,6 +57,7 @@ React component for a simple login with Microsoft services, based on [Official M
 | debug                 | boolean                                            |                        | Boolean flag to enable detailed logs of authorization process.                                                                                                                                                                            |
 | className             | string                                             |                        | Additional class name string.                                                                                                                                                                                                             |
 | children              | ReactComponent                                     |                        | Alternative way to provide custom button element as a children prop instead of [Official Microsoft brand design](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-branding-in-azure-ad-apps)                     |
+| attemptSilentLogin | boolean | `false` | Set whether silent login should be attempted |
 
 ### Sign out
 
