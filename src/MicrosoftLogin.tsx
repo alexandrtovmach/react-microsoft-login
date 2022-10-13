@@ -86,6 +86,11 @@ interface MicrosoftLoginProps {
    * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso
    */
   useLocalStorageCache?: boolean;
+
+  /**
+   * Set whether silent login should be attempted
+   */
+  attemptSilentLogin?: boolean;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
@@ -103,6 +108,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   prompt,
   debug,
   useLocalStorageCache,
+  attemptSilentLogin = false,
 }) => {
   const msalInstance = getUserAgentApp({
     clientId,
@@ -137,12 +143,15 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   // attempt silent login
   // return msalInstance to user login handler on reload if token is present
   useEffect(() => {
+    if (!attemptSilentLogin) return;
+
     const clientToken = useLocalStorageCache
       ? localStorage.getItem("msal.idtoken")
       : sessionStorage.getItem("msal.idtoken");
 
-    clientToken && getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
-  }, [msalInstance]);
+    clientToken &&
+      getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
+  }, []);
 
   const login = () => {
     log("Login STARTED");
