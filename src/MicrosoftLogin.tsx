@@ -86,6 +86,8 @@ interface MicrosoftLoginProps {
    * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso
    */
   useLocalStorageCache?: boolean;
+
+  children?: React.ReactNode;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
@@ -141,7 +143,8 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       ? localStorage.getItem("msal.idtoken")
       : sessionStorage.getItem("msal.idtoken");
 
-    clientToken && getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
+    clientToken &&
+      getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
   }, [msalInstance]);
 
   const login = () => {
