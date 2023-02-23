@@ -90,6 +90,11 @@ interface MicrosoftLoginProps {
    * https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-js-sso
    */
   useLocalStorageCache?: boolean;
+
+  /**
+   * Custom button element
+   */
+  children: React.ReactNode;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
