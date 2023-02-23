@@ -1,3 +1,5 @@
+> NOTE: Microsoft team created their [`@azure/msal-react`](https://www.npmjs.com/package/@azure/msal-react) and it can be used as a good official alternative to `react-microsoft-login`
+
 # react-microsoft-login
 
 [![npm](https://img.shields.io/npm/v/react-microsoft-login?logo=npm&cacheSeconds=1800)](https://www.npmjs.com/package/react-microsoft-login)
