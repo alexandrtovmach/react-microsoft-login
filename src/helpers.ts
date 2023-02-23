@@ -1,6 +1,7 @@
-import { UserAgentApplication } from "msal";
+import { PublicClientApplication } from "@azure/msal-browser";
 
-const CLIENT_ID_REGEX = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
+const CLIENT_ID_REGEX =
+  /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/;
 
 export const getUserAgentApp = ({
   clientId,
@@ -16,14 +17,13 @@ export const getUserAgentApp = ({
   useLocalStorageCache?: boolean;
 }) => {
   if (clientId && CLIENT_ID_REGEX.test(clientId)) {
-    return new UserAgentApplication({
+    return new PublicClientApplication({
       auth: {
         ...(redirectUri && { redirectUri }),
         ...(tenantUrl && { authority: tenantUrl }),
         ...(postLogoutRedirectUri && { postLogoutRedirectUri }),
 
         clientId,
-        validateAuthority: true,
         navigateToLoginRequestUrl: false,
       },
       cache: {
@@ -43,21 +43,19 @@ export const getScopes = (graphScopes?: string[]) => {
   return scopes;
 };
 
-export const getLogger = (isDebugMode?: boolean) => (
-  name: string,
-  content?: any,
-  isError?: boolean
-) => {
-  if (isDebugMode) {
-    const style = `background-color: ${
-      isError ? "#990000" : "#009900"
-    }; color: #ffffff; font-weight: 700; padding: 2px`;
-    console.groupCollapsed("MSLogin debug");
-    console.log(`%c${name}`, style);
-    content && console.log(content.message || content);
-    console.groupEnd();
-  }
-};
+export const getLogger =
+  (isDebugMode?: boolean) =>
+  (name: string, content?: any, isError?: boolean) => {
+    if (isDebugMode) {
+      const style = `background-color: ${
+        isError ? "#990000" : "#009900"
+      }; color: #ffffff; font-weight: 700; padding: 2px`;
+      console.groupCollapsed("MSLogin debug");
+      console.log(`%c${name}`, style);
+      content && console.log(content.message || content);
+      console.groupEnd();
+    }
+  };
 
 export const checkToIE = (): boolean => {
   const ua = window.navigator.userAgent;
