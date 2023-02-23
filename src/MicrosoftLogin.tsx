@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
-import { AuthResponse, AuthError, UserAgentApplication } from "msal";
+import {
+  AuthError,
+  AuthenticationResult,
+  PublicClientApplication,
+} from "@azure/msal-browser";
 import { User } from "@microsoft/microsoft-graph-types";
 
 import MicrosoftLoginButton, {
@@ -19,8 +23,8 @@ interface MicrosoftLoginProps {
    */
   authCallback: (
     error: AuthError | null,
-    result?: AuthResponse | (AuthResponse & User),
-    instance?: UserAgentApplication
+    result?: AuthenticationResult | (AuthenticationResult & User),
+    instance?: PublicClientApplication
   ) => void;
 
   /**
@@ -120,18 +124,22 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   }
 
   useEffect(() => {
-    msalInstance.handleRedirectCallback(
-      (error: AuthError, authResponse: AuthResponse) => {
-        if (!error && authResponse) {
-          log("Fetch Azure AD 'token' with redirect SUCCEEDED", authResponse);
+    msalInstance
+      .handleRedirectPromise()
+      .then((AuthenticationResult: AuthenticationResult) => {
+        if (AuthenticationResult) {
+          log(
+            "Fetch Azure AD 'token' with redirect SUCCEEDED",
+            AuthenticationResult
+          );
           log("Fetch Graph API 'access_token' in silent mode STARTED");
           getGraphAPITokenAndUser(true);
-        } else {
-          log("Fetch Azure AD 'token' with redirect FAILED", error, true);
-          authCallback(error);
         }
-      }
-    );
+      })
+      .catch((error: AuthError) => {
+        log("Fetch Azure AD 'token' with redirect FAILED", error, true);
+        authCallback(error);
+      });
   }, []);
 
   // attempt silent login
@@ -141,7 +149,8 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       ? localStorage.getItem("msal.idtoken")
       : sessionStorage.getItem("msal.idtoken");
 
-    clientToken && getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
+    clientToken &&
+      getGraphAPITokenAndUser(forceRedirectStrategy || checkToIE());
   }, [msalInstance]);
 
   const login = () => {
@@ -153,16 +162,18 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
     }
   };
 
-  const finalStep = (authResponseWithAccessToken: AuthResponse) => {
+  const finalStep = (
+    AuthenticationResultWithAccessToken: AuthenticationResult
+  ) => {
     log(
       "Fetch Graph API 'access_token' SUCCEEDED",
-      authResponseWithAccessToken
+      AuthenticationResultWithAccessToken
     );
     if (withUserData) {
-      getUserData(authResponseWithAccessToken);
+      getUserData(AuthenticationResultWithAccessToken);
     } else {
       log("Login SUCCEEDED");
-      authCallback(null, authResponseWithAccessToken, msalInstance);
+      authCallback(null, AuthenticationResultWithAccessToken, msalInstance);
     }
   };
 
@@ -195,8 +206,11 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   const popupLogin = async () => {
     log("Fetch Azure AD 'token' with popup STARTED");
     try {
-      const authResponse = await msalInstance.loginPopup({ scopes, prompt });
-      log("Fetch Azure AD 'token' with popup SUCCEEDED", authResponse);
+      const AuthenticationResult = await msalInstance.loginPopup({
+        scopes,
+        prompt,
+      });
+      log("Fetch Azure AD 'token' with popup SUCCEEDED", AuthenticationResult);
       log("Fetch Graph API 'access_token' in silent mode STARTED");
       getGraphAPITokenAndUser();
     } catch (err) {
@@ -210,8 +224,10 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
     msalInstance.loginRedirect({ scopes, prompt });
   };
 
-  const getUserData = async (authResponseWithAccessToken: AuthResponse) => {
-    const { accessToken } = authResponseWithAccessToken;
+  const getUserData = async (
+    AuthenticationResultWithAccessToken: AuthenticationResult
+  ) => {
+    const { accessToken } = AuthenticationResultWithAccessToken;
     log("Fetch Graph API user data STARTED");
     const options = {
       method: "GET",
@@ -230,7 +246,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       null,
       {
         ...userData,
-        ...authResponseWithAccessToken,
+        ...AuthenticationResultWithAccessToken,
       },
       msalInstance
     );
