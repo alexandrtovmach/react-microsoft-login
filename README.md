@@ -93,4 +93,4 @@ export default ExamplePage;
 
 ## 📝 License
 
-[MIT](https://github.com/alexandrtovmach/react-microsoft-login/blob/master/LICENSE)
+[MIT](https://github.com/alexandrtovmach/react-microsoft-login/blob/main/LICENSE)

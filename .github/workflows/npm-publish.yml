@@ -3,7 +3,7 @@ name: Publish to npm and deploy demo
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       # require to change version number in package.json
       - "package.json"
