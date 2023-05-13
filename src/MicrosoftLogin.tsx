@@ -94,7 +94,7 @@ interface MicrosoftLoginProps {
   /**
    * Custom button element
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
