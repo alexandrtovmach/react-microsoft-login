@@ -95,6 +95,12 @@ interface MicrosoftLoginProps {
    * Custom button element
    */
   children: React.ReactNode;
+
+  /**
+   * State parameter to be passed to MSAL popup and redirect login flows, and returned in the
+     Response
+   */
+  state?: string;
 }
 
 const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
@@ -112,6 +118,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
   prompt,
   debug,
   useLocalStorageCache,
+  state,
 }) => {
   const msalInstance = getUserAgentApp({
     clientId,
@@ -195,10 +202,13 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
         );
         if (isRedirect) {
           log("Fetch Graph API 'access_token' with redirect STARTED");
-          msalInstance.acquireTokenRedirect({ scopes });
+          msalInstance.acquireTokenRedirect({ scopes, state });
         } else {
           log("Fetch Graph API 'access_token' with popup STARTED");
-          const popupRes = await msalInstance.acquireTokenPopup({ scopes });
+          const popupRes = await msalInstance.acquireTokenPopup({
+            scopes,
+            state,
+          });
           finalStep(popupRes);
         }
       }
@@ -214,6 +224,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
       const AuthenticationResult = await msalInstance.loginPopup({
         scopes,
         prompt,
+        state,
       });
       log("Fetch Azure AD 'token' with popup SUCCEEDED", AuthenticationResult);
       log("Fetch Graph API 'access_token' in silent mode STARTED");
@@ -226,7 +237,7 @@ const MicrosoftLogin: React.FunctionComponent<MicrosoftLoginProps> = ({
 
   const redirectLogin = () => {
     log("Fetch Azure AD 'token' with redirect STARTED");
-    msalInstance.loginRedirect({ scopes, prompt });
+    msalInstance.loginRedirect({ scopes, prompt, state });
   };
 
   const getUserData = async (
